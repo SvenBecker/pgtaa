@@ -1,0 +1,66 @@
+{
+    "data": {
+        "date": {
+            "start": "2013-01-01",
+            "end": "2018-10-20"
+        },
+        "assets": {
+            "IWD": "iShares Russell 1000 Value ETF",
+            "IWF": "iShares Russell 1000 Growth ETF",
+            "IWO": "iShares Russell 2000 Growth ETF",
+            "IWN": "iShares Russell 2000 Value ETF",
+            "EFA": "iShares MSCI EAFE ETF",
+            "IEMG": "iShares Core MSCI Emerging Markets ETF",
+            "TIP": "iShares TIPS Bond ETF",
+            "GOVT": "iShares U.S. Treasury Bond ETF",
+            "GLD": "SPDR Gold Trust",
+            "VNQ": "Vanguard REIT ETF"
+        },
+        "yahoo_data": {
+            "EURUSD=X": "EUR/USD",
+            "GBPUSD": "GBP/USD",
+            "AUDUSD=X": "AUD/USD",
+            "JPY=X": "USD/JPY",
+            "CNY=X": "USD/CNY"
+        },
+        "fred_data": {
+            "A191RL1Q225SBEA": "GDP",
+            "UNRATE": "Unemployment",
+            "CPIAUCSL": "CPI adj",
+            "INDPRO": "IP",
+            "GFDEGDQ188S": "Federal Debt",
+            "PCEC": "PCEC",
+            "FEDFUNDS": "Interest Rate",
+            "DPCREDIT": "Credit Rate",
+            "DGS10": "10Y-Treas-Rate",
+            "PAYEMS": "Payroll Employment"
+        }
+    },
+    "environment": {
+        "risk_aversion": 1.0,
+        "portfolio_init_value": 1000,
+        "horizon": 20,
+        "window_size": 100,
+        "train_test_split": 0.85
+    },
+    "predictor_model": {
+        "learning_rate": 0.01,
+        "batch_size": 32,
+        "epochs": 20
+    },
+    "agent": {
+        "train": {
+            "learning_rate": 1e-4,
+            "batch_size": 20,
+            "episodes": 100,
+            "epochs": 200
+        },
+        "test": {
+            "episodes": 100
+        },
+        "net_config": {
+            "layers": 3,
+            "cells": [32, 32, 32]
+        }
+    }
+}
