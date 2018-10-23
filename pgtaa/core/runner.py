@@ -2,10 +2,15 @@ import os
 import time
 import threading
 import logging
+from tqdm import tqdm
 import numpy as np
 import pandas as pd
+from collections import OrderedDict
 
 from pgtaa.core.agents import BaHAgent
+
+
+#TODO: add validation set (maybe k-fold cross val)
 
 
 logging.basicConfig(
@@ -42,26 +47,40 @@ class BasicRunner(object):
     def __init__(
             self,
             epochs: int=50,
-            episodes: int=100,
+            trn_episodes: int=100,
+            val_episodes: int = 100,
+            test_episodes: int = 100,
             horizon: int=20,
             verbose: int=0,
             model_path: str=None,
-            seed: int=92
+            seed: int=92,
+            inference: bool=False
     ):
         """
         Args:
-            :param epochs: (int) max epochs
-            :param episodes: (int) max episodes
-            :param horizon: (int) investment horizon
-            :param verbose: (int) console printing level
-            :param model_path: (str) path for model saves
-            :param seed: (int) seed for random number generator
+            :param epochs: max epochs
+            :param episodes: max episodes
+            :param horizon: investment horizon
+            :param verbose: console printing level
+            :param model_path: path for model saves
+            :param seed: seed for random number generator
+            :param inference: inference or training mode
         """
         self.epochs = epochs
-        self.episodes = episodes
+        self.trn_episodes = trn_episodes
+        self.val_episodes = val_episodes
+        self.test_episodes = test_episodes
         self.horizon = horizon
         self.verbose = verbose
         self.seed = seed
+        self.inference = inference
+        if self.inference:
+            # for testing only one epoch is required
+            self.epochs = 1
+            self.episodes = self.test_episodes
+        else:
+            self.episodes = self.trn_episodes
+
 
         if model_path is None:
             self.model_path = os.path.join(os.getcwd(), "models", "saves")
@@ -70,6 +89,9 @@ class BasicRunner(object):
 
         self.start = None
         self.history = []
+        self.val_history = []
+
+        # has to be a small number in case of only negative rewards
         self.global_epoch_reward = -100
 
     def __str__(self):
@@ -109,7 +131,7 @@ class BasicRunner(object):
             :param thread_id: (int) optional thread id
         """
         if self.verbose < 1:
-
+        #TODO: remove the print statements!
             if thread_id is not None:
                 print(f'Worker {thread_id} finished epoch {epoch + 1}: '
                       f'Average reward: {np.mean(self.history[-1][:, 0], axis=0)}, '
@@ -120,6 +142,7 @@ class BasicRunner(object):
                       f'Average reward: {np.mean(self.history[-1][:, 0], axis=0)}, '
                       f'Average return: {np.mean(self.history[-1][:, 2], axis=0)}, '
                       f'Average value {np.mean(self.history[-1][:, 1], axis=0)}')
+
         else:
             columns = ['Episode Reward', 'Portfolio Value',
                        'Portfolio Return', 'Sharpe Ratio',
@@ -144,15 +167,49 @@ class BasicRunner(object):
             logger.debug(df)
             logger.info(f'{77 * "#"}\n{evaluation}')
 
+        if not self.inference:
+            if self.verbose < 1:
+                # TODO: remove the print statements!
+                if thread_id is not None:
+                    print(f'Average validation reward: {np.mean(self.val_history[-1][:, 0], axis=0)}, '
+                          f'Average validation return: {np.mean(self.val_history[-1][:, 2], axis=0)}, '
+                          f'Average value {np.mean(self.val_history[-1][:, 1], axis=0)}')
+                else:
+                    print(f'Average reward: {np.mean(self.val_history[-1][:, 0], axis=0)}, '
+                          f'Average return: {np.mean(self.val_history[-1][:, 2], axis=0)}, '
+                          f'Average value {np.mean(self.val_history[-1][:, 1], axis=0)}')
+
+            else:
+                columns = ['Episode Reward', 'Portfolio Value',
+                           'Portfolio Return', 'Sharpe Ratio',
+                           'Portfolio Variance', 'Cumulative Costs']
+
+                df = pd.DataFrame(self.val_history[-1], columns=columns,
+                                  index=range(1, self.val_episodes + 1))
+
+                mean = pd.DataFrame(df.mean(axis=0), columns=['Validation Average'])
+                std = pd.DataFrame(df.std(axis=0), columns=['Validation Std Deviation'])
+                maximum = pd.DataFrame(df.max(axis=0), columns=['Validation Maximum'])
+                minimum = pd.DataFrame(df.min(axis=0), columns=['Validation Minimum'])
+
+                evaluation = pd.DataFrame(pd.concat([mean, std, maximum, minimum], axis=1))
+
+                print(evaluation)
+                logger.debug(df)
+                logger.info(f'{77 * "#"}\n{evaluation}')
+
+
     def run(self):
         self.start = time.time()
         return self._run()
 
-    def close(self, save_full=None, save_short=None):
+    def close(self, save_full: str=None, save_short: str=None, save_full_val: str=None, save_short_val: str=None):
         """
         Args
-            :param save_full: (str) path for full epoch evaluation file if not None
-            :param save_short: (str) path for small epoch evaluation file if not None
+            :param save_full: path for full epoch evaluation file if not None
+            :param save_short:  path for small epoch evaluation file if not None
+            :param save_full_val: path for full validation epoch evaluation file if not None
+            :param save_short_val: path for small validation epoch evaluation file if not None
 
         :return: _close() method of child class
         """
@@ -185,13 +242,47 @@ class BasicRunner(object):
         print(short)
 
         # save evaluation files
-        if save_full is not None:
+        if save_full:
             # contains episode rewards etc
             evaluation.to_csv(save_full)
 
-        if save_short is not None:
+        if save_short:
             # contains epoch averages etc
             short.to_csv(save_short)
+
+        if not self.inference:
+            if len(self.val_history) == 1:
+                evaluation = pd.DataFrame(self.val_history[0], index=range(1, self.val_episodes + 1),
+                                          columns=columns).rename_axis('Episode')
+            else:
+                evaluation = pd.DataFrame(
+                    pd.concat([pd.DataFrame(epoch, index=range(1, self.val_episodes + 1),
+                                            columns=columns).rename_axis('Episode') for epoch in self.val_history],
+                              axis=1, keys=['Epoch ' + str(i + 1) for i in range(len(self.val_history))]))
+
+            logger.info(f'{77 * "#"}\nValidation:{evaluation}')
+            if self.verbose >= 2:
+                print('\n Validation:', evaluation)
+
+            mean = pd.DataFrame(evaluation.mean(axis=0), columns=['Validation Average'])
+            std = pd.DataFrame(evaluation.std(axis=0), columns=['Validation Std Deviation'])
+            var = pd.DataFrame(evaluation.var(axis=0), columns=['Validation Variance'])
+            maximum = pd.DataFrame(evaluation.max(axis=0), columns=['Validation Maximum'])
+            minimum = pd.DataFrame(evaluation.min(axis=0), columns=['Validation Minimum'])
+
+            short = pd.DataFrame(pd.concat([mean, std, var, maximum, minimum], axis=1))
+
+            logger.info(f'{77 * "#"}\nValidation:{short}')
+            print(f'Validation:{short}')
+
+            # save evaluation files
+            if save_full_val:
+                # contains episode rewards etc
+                evaluation.to_csv(save_full_val)
+
+            if save_short_val:
+                # contains epoch averages etc
+                short.to_csv(save_short_val)
 
         return self._close()
 
@@ -199,15 +290,17 @@ class BasicRunner(object):
 class Runner(BasicRunner):
     def __init__(
             self,
-            agent,
-            environment,
-            epochs=50,
-            episodes=100,
-            horizon=20,
-            mode='train',
-            verbose=0,
-            model_path=None,
-            seed=92
+            agent,              #TODO set to agent object
+            environment,        #TODO set env to env object
+            epochs: int=50,
+            trn_episodes: int=100,
+            val_episodes: int = 100,
+            test_episodes: int = 100,
+            horizon: int=20,
+            inference: bool=False,
+            verbose: int=0,
+            model_path: str=None,
+            seed: int=92
     ):
         """
         Args:
@@ -217,25 +310,25 @@ class Runner(BasicRunner):
         """
         super(Runner, self).__init__(
             epochs=epochs,
-            episodes=episodes,
+            trn_episodes=trn_episodes,
+            val_episodes=val_episodes,
+            test_episodes=test_episodes,
             horizon=horizon,
             verbose=verbose,
             model_path=model_path,
-            seed=seed
+            seed=seed,
+            inference=inference
         )
 
         self.agent = agent
         self.environment = environment
-        self.mode = mode
-        if self.mode == 'test':
-            # for testing only one epoch is required
-            self.epochs = 1
-
         self.model_path = os.path.join(self.model_path, str(self.agent))
 
     def _run(self):
 
         for epoch in range(self.epochs):
+
+# -------------------------- start epoch -----------------------------------------#
 
             # reset the environment random seed -> same episode start points for next epoch
             self.environment.seed(seed=self.seed)
@@ -243,90 +336,144 @@ class Runner(BasicRunner):
             # after an epoch finished return same episode entry point order
             state = self.environment.reset_epoch()
 
-            reward = []
-            value = []
-            returns = []
-            sharpe = []
-            variance = []
-            costs = []
+            performance = OrderedDict(reward=[], value=[], returns=[], sharpe=[], variance=[], costs=[])
 
-            for episode in range(self.episodes):
-                # reset the agent
-                self.agent.reset()
-                # reset the episode reward
-                episode_reward = 0
+            with tqdm(total=self.episodes) as pbar:
 
-                for step in range(self.horizon):
+                for episode in range(self.episodes):
+                    # reset the agent
+                    self.agent.reset()
+                    # reset the episode reward
+                    episode_reward = 0
 
-                    # get next step and results for the taken action
-                    if self.mode == 'test':
-                        # do action based on observation
+                    for step in range(self.horizon):
+
+                        # get next step and results for the taken action
+                        if not self.inference:
+                            # do action based on observation
+                            action = self.agent.act(state, deterministic=True)
+
+                            # for testing no agent observations regarding the reward are required
+                            result = self.environment.execute(action)
+                        else:
+                            # do action based on observation
+                            action = self.agent.act(state, deterministic=False)
+
+                            result = self.environment.execute(action)
+
+                            # agent receives new observation and the result of his action(s)
+                            self.agent.observe(terminal=result.done, reward=result.reward)
+
+                        # update information regarding the current portfolio
+                        info = result.info['info']
+
+                        # increase episode reward by step reward
+                        episode_reward += result.reward
+
+                        # update state
+                        state = result.state
+
+                    # saves the episode results
+                    performance["reward"].append(episode_reward)
+                    performance["value"].append(info.portfolio_value)
+                    performance["return"].append(performance["value"][-1] /
+                                                 self.environment.init_portfolio_value - 1)
+                    performance["sharpe"].append(info.sharpe_ratio)
+                    performance["variance"].append(info.portfolio_variance)
+                    performance["costs"].append(self.environment.episode_costs)
+
+                    # log episode performance
+                    self.episode_finished([performance["reward"][-1],
+                                           performance["value"][-1],
+                                           performance["returns"][-1]],
+                                          episode=episode)
+
+                    # update progressbar
+                    pbar.update(1)
+
+                    # reset the environment
+                    if episode <= self.episodes:
+                        state = self.environment.reset()
+
+# --------------------------------- validation ---------------------------------- #
+
+            # epoch finished -> validate agent
+            if not self.inference:
+
+                val_performance = OrderedDict(reward=[], value=[], returns=[], sharpe=[], variance=[], costs=[])
+
+                for episode in range(self.val_episodes):
+                    # reset the agent
+                    self.agent.reset()
+                    # reset the episode reward
+                    episode_reward = 0
+
+                    for step in range(self.horizon):
+                        # do action based on observation current policy
                         action = self.agent.act(state, deterministic=True)
 
                         # for testing no agent observations regarding the reward are required
                         result = self.environment.execute(action)
-                    else:
-                        # do action based on observation
-                        action = self.agent.act(state, deterministic=False)
 
-                        result = self.environment.execute(action)
+                        # update information regarding the current portfolio
+                        info = result.info['info']
 
-                        # agent receives new observation and the result of his action(s)
-                        self.agent.observe(terminal=result.done, reward=result.reward)
+                        # increase episode reward by step reward
+                        episode_reward += result.reward
 
-                    # update information regarding the current portfolio
-                    info = result.info['info']
+                        # update state
+                        state = result.state
 
-                    # increase episode reward by step reward
-                    episode_reward += result.reward
+                    # saves the episode results
+                    val_performance["reward"].append(episode_reward)
+                    val_performance["value"].append(info.portfolio_value)
+                    val_performance["return"].append(performance["value"][-1] /
+                                                     self.environment.init_portfolio_value - 1)
+                    val_performance["sharpe"].append(info.sharpe_ratio)
+                    val_performance["variance"].append(info.portfolio_variance)
+                    val_performance["costs"].append(self.environment.episode_costs)
 
-                    # update state
-                    state = result.state
+                    # log episode performance
+                    self.episode_finished([val_performance["reward"][-1],
+                                           val_performance["value"][-1],
+                                           val_performance["returns"][-1]],
+                                          episode=episode)
 
-                # saves the episode results
-                reward.append(episode_reward)
-                value.append(info.portfolio_value)
-                returns.append(value[-1] / self.environment.init_portfolio_value - 1)
-                sharpe.append(info.sharpe_ratio)
-                variance.append(info.portfolio_variance)
-                costs.append(self.environment.episode_costs)
+                    # reset the environment
+                    if episode <= self.episodes:
+                        state = self.environment.reset()
 
-                # does some printing
-                self.episode_finished([reward[-1], value[-1], returns[-1]], episode=episode)
+# ---------------------------------- epoch finished -------------------------------------------------------------------#
 
-                # reset the environment
-                if episode < self.episodes - 1:
-                    state = self.environment.reset()
+                # epoch finished -> if that is the best epoch so far (average reward based on validation set):
+                # -> save the model
+                mean = np.mean(val_performance["reward"])
+                if mean > self.global_epoch_reward:
+                    try:
+                        self.agent.save_model(directory=os.path.join(self.model_path, str(self.agent)))
+                        logger.info(f'Agent has been saved to {os.path.join(self.model_path, str(self.agent))}')
+                        self.global_epoch_reward = mean
+                    except AttributeError:
+                        pass
+                    except FileNotFoundError:
+                        if not os.path.isdir(self.model_path):
+                            try:
+                                os.mkdir(self.model_path, 0o755)
+                            except OSError:
+                                raise OSError("Cannot save agent to dir {} ()".format(self.model_path))
+                        self.agent.save_model(directory=os.path.join(self.model_path, str(self.agent)))
+                        logger.info(f'Agent has been saved to {os.path.join(self.model_path, str(self.agent))}')
+                        print('\n> Agent has been saved')
+                        self.global_epoch_reward = mean
+                    except Exception as e:
+                        logger.error(e)
 
-            # epoch finished -> if that is the best epoch so far (average reward): save the model
-            if np.mean(reward) > self.global_epoch_reward and self.mode != 'test':
-                try:
-                    self.agent.save_model(directory=os.path.join(self.model_path, str(self.agent)))
-                    logger.info(f'Agent has been saved to {os.path.join(self.model_path, str(self.agent))}')
-                    print('\n> Agent has been saved')
-                    self.global_epoch_reward = np.mean(reward)
-                except AttributeError:
-                    pass
-                except FileNotFoundError:
-                    if not os.path.isdir(self.model_path):
-                        try:
-                            os.mkdir(self.model_path, 0o755)
-                        except OSError:
-                            raise OSError("Cannot save agent to dir {} ()".format(self.model_path))
-                    self.agent.save_model(directory=os.path.join(self.model_path, str(self.agent)))
-                    logger.info(f'Agent has been saved to {os.path.join(self.model_path, str(self.agent))}')
-                    print('\n> Agent has been saved')
-                    self.global_epoch_reward = np.mean(reward)
-                except Exception as e:
-                    logger.error(e)
+                self.val_history.append(np.array([v for v in val_performance.values()]).T)
+            self.history.append(np.array([v for v in performance.values()]).T)
 
-            self.history.append(np.array([reward, value, returns, sharpe, variance, costs]).T)
+            self.epoch_finished(epoch=epoch)
 
-            if self.mode != 'test':
-                # some console and logger printing
-                self.epoch_finished(epoch=epoch)
-
-        print('Finished run. Time: ', time.time() - self.start)
+        print('Finished run. Time: {}'.format(time.time() - self.start))
 
     def _close(self):
         # close agent and environment
@@ -334,22 +481,23 @@ class Runner(BasicRunner):
         self.environment.close()
 
 
+"""
 class ThreadedRunner(BasicRunner):
     def __init__(
             self,
             agents,
             environments,
-            epochs=50,
-            episodes=100,
-            horizon=20,
-            verbose=0,
-            model_path=None,
-            seed=92
+            epochs: int=50,
+            episodes: int=100,
+            horizon: int=20,
+            verbose: int=0,
+            model_path: str=None,
+            seed: int=92
     ):
         """
-        Args:
-            :param agents: (object) list of agent objects
-            :param environments: (object) list of environment objects
+        #Args:
+            #:param agents: (object) list of agent objects
+            #:param environments: (object) list of environment objects
         """
         super(ThreadedRunner, self).__init__(
             epochs=epochs,
@@ -377,10 +525,10 @@ class ThreadedRunner(BasicRunner):
 
     def _run_thread(self, thread_id, agent, environment):
         """
-        Args:
-            :param thread_id: (int) worker/thread id
-            :param agent: (object) worker agent
-            :param environment: (object) worker environment
+        #Args:
+            #:param thread_id: (int) worker/thread id
+            #:param agent: (object) worker agent
+            #:param environment: (object) worker environment
         """
         from pgtaa.core.utils import get_flatten
         state = get_flatten(environment.state)    # has to be declared because of some threaded error
@@ -465,28 +613,31 @@ class ThreadedRunner(BasicRunner):
         # close all agents and environments
         [agent.close() for agent in self.agents]
         [env.close() for env in self.environments]
-
+"""
 
 if __name__ == '__main__':
+    pass
     """
     Run the Buy and Hold Agent on the environment to see if the runner and environment 
     are correctly working.
     """
-    import pgtaa.config as config
-    from pgtaa.environment.env import PortfolioEnv
-    from pgtaa.core.utils import PrepData
+    # import pgtaa.config as cfg
+    # from pgtaa.environment.env import PortfolioEnv
+    # from pgtaa.core.utils import PrepData
 
+    """
     prep = PrepData(horizon=10,
-                    window_size=config.WINDOW_SIZE,
-                    nb_assets=config.NB_ASSETS,
-                    split=config.TRAIN_SPLIT)
-    data = prep.get_data(config.ENV_DATA)  # get data file and extract data
-    train = data[0:int(config.TRAIN_SPLIT * data.shape[0])]  # train/test split
+                    window_size=cfg.WINDOW_SIZE,
+                    nb_assets=cfg.NB_ASSETS,
+                    split=cfg.TRAIN_SPLIT)
+    data = prep.get_data(cfg.ENV_DATA)  # get data file and extract data
+    train = data[0:int(cfg.TRAIN_SPLIT * data.shape[0])]  # train/test split
     scaler = prep.get_scaler(train)
     agent = BaHAgent(action_shape=(10,))
     env = PortfolioEnv(data, scaler=scaler, action_type='signal', random_starts=False)
-    run = Runner(agent, env, mode='test', verbose=2, episodes=config.EPISODES, epochs=config.EPOCHS)
+    run = Runner(agent, env, mode='test', verbose=2, episodes=cfg.EPISODES, epochs=cfg.EPOCHS)
     run.run()
     run.close(
-        save_full=os.path.join(config.RUN_DIR, 'train') + '/full_BuyAndHoldAgent_evaluation.csv',
-        save_short=os.path.join(config.RUN_DIR, 'train') + '/short_BuyAndHoldAgent_evaluation.csv')
+        save_full=os.path.join(cfg.RUN_DIR, 'train') + '/full_BuyAndHoldAgent_evaluation.csv',
+        save_short=os.path.join(cfg.RUN_DIR, 'train') + '/short_BuyAndHoldAgent_evaluation.csv')
+    """

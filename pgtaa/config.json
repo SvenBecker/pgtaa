@@ -55,6 +55,9 @@
             "episodes": 100,
             "epochs": 200
         },
+        "valid": {
+            "episodes": 50
+        },
         "test": {
             "episodes": 100
         },

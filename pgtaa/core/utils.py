@@ -21,7 +21,6 @@ def get_scaler(train: np.ndarray, feature_range: tuple=(0, 1)):
 
 def read_data(file):
     data = pd.read_csv(file, parse_dates=[0], dtype=np.float64, index_col=0)
-    print(data.head(2))
     return data.values
 
 
@@ -34,12 +33,20 @@ def get_split(x: np.ndarray, y: np.ndarray, split: float=0.85):
 class PrepData(object):
     def __int__(
         self,
-        file_name,
+        file_name: str,
         horizon: int=10,
         window_size: int=100,
         split: float=0.85,
         nb_assets: int=10
     ):
+        """
+        Data preparation class
+        :param file_name: data set (path + filename)
+        :param horizon: investment horizon
+        :param window_size: evaluation window
+        :param split: train/test split
+        :param nb_assets: number of assets
+        """
 
         self.horizon = horizon
         self.nb_assets = nb_assets
@@ -60,7 +67,3 @@ class PrepData(object):
         ydata = np.array(ydata).reshape((x.shape[0] - self.window_size, y.shape[1]))
         return xdata, ydata
 
-
-if __name__ == "__main__":
-    data = read_data("../environment/data/environment.csv")
-    #print(data)
