@@ -1,14 +1,19 @@
 import sys
 import time
 import logging
+from tqdm import tqdm
 import pandas as pd
 import pandas_datareader as web
-from pgtaa.config import *
+
+from ..core.colorized import ColourHandler, color_bar
+from ..config import *
+#from pgtaa.core.colorized import ColourHandler, color_bar
+#from pgtaa.config import *
 
 
 logging.basicConfig(
-    level=logging.INFO,
-    filename="data_load.log",
+    level=logging.DEBUG,
+    filename=os.path.join(DATA_DIR, "data_load.log"),
     filemode='w',
     format='%(asctime)s %(levelname)s: %(message)s',
     datefmt='%H:%M:%S')
@@ -16,15 +21,17 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # add stream handler which prints to stderr
-ch = logging.StreamHandler()
+#ch = logging.StreamHandler(sys.stdout)
+ch = ColourHandler()
 
 # modify stream handler log format
-formatter_ch = logging.Formatter('%(levelname)s - %(message)s')
+#formatter_ch = logging.Formatter('%(levelname)s - %(message)s')
+formatter_ch = logging.Formatter('%(message)s')
 
 ch.setFormatter(formatter_ch)
 
 # set stream handler log level
-ch.setLevel(logging.WARNING)
+ch.setLevel(logging.DEBUG)
 
 logger.addHandler(ch)
 
@@ -54,8 +61,8 @@ class RequestData:
         if names is not None:
             self.names = list(names)
 
-        logger.info(f'Collecting data for {self.names} from {self.source}')
-        logger.info(f'Time frame:{self.start} - {self.end}')
+        logger.debug(f'Collecting data for {self.names} from {self.source}')
+        logger.debug(f'Time frame: {self.start} - {self.end}\n')
 
         self.ds = self._concat_data()
 
@@ -70,56 +77,62 @@ class RequestData:
                     r = web.DataReader(symbol, self.source, self.start, self.end)['Adj Close']
                 else:
                     raise ValueError("No valid data source given!")
-                logger.info(f'Data for {name} has been collected')
+                logger.info(f'   Data for {name} has been collected')
                 # break loop if request has been successful
                 break
             except Exception as e:
                 logger.error(e)
-
                 # sleep for 1 second and restart request
                 time.sleep(1)
                 if time.time() - start > 300:
                     # if single request takes more than 5 minutes exit process
-                    logger.critical(f'Request for {name} has failed')
+                    logger.critical(f'Request for {name} has failed!')
                     sys.exit()
         return r
 
     def _concat_data(self):
         # concatenate data
         data = []
-        for symbol, name in zip(self.symbols, self.names):
-            data.append(self.get_data(symbol, name))
+        with tqdm(total=len(self.symbols),
+                  bar_format=color_bar("white")) as pbar:
+            for symbol, name in zip(self.symbols, self.names):
+                data.append(self.get_data(symbol, name))
+                pbar.update(1)
         ds = pd.DataFrame(pd.concat(data, axis=1))
         ds.columns = self.names
-        logger.info(f'Data shape: {ds.shape}')
+        logger.debug(f'Data shape: {ds.shape}\n')
         return ds
 
 
-if __name__ == '__main__':
-
+def main():
     __start = time.time()
 
-    portfolio_ds = RequestData(ASSETS, source='yahoo', start=START, end=END).ds
-    yahoo_ds = RequestData(list(YAHOO_DATA.keys()), source='yahoo', start=START, end=END,
-                           names=pd.read_csv(config.DATABASE_DIR + '/yahoo.csv')['Name']).ds
-    fred_ds = RequestData(list(FRED_DATA.keys()), source='fred', start=START, end=END,
-                          names=pd.read_csv(config.DATABASE_DIR + '/fred.csv')['Name']).ds
-    logger.info(f'Request time: {time.time() - __start}')
+    portfolio_ds = RequestData(ASSETS, source='yahoo', names=ASSET_NAMES, start=START, end=END).ds
+
+    # the feature data set is primarily for training additional market predictor models
+    # data was obtained from https://fred.stlouisfed.org/
+    feature_ds = RequestData(list(FRED_DATA.keys()), source='fred', start=START, end=END,
+                             names=FRED_DATA.values()).ds
+
+    logger.debug(f'Data request runtime: {time.time() - __start}')
 
     # saves an csv file (is being used to do some visualization)
-    portfolio_ds.to_csv('asset_price.csv')
+    portfolio_ds.to_csv(ASSETS_CSV)
 
     # for the environment only the asset daily returns are required + drop first row
-    portfolio_ds = portfolio_ds.pct_change(1).dropna()
+    portfolio_ds.pct_change(1).dropna(inplace=True)
 
     # concatenate yahoo and fred data and interpolate missing data
-    feature_ds = pd.DataFrame(pd.concat([yahoo_ds, fred_ds], axis=1)).interpolate(method='linear')
+    feature_ds.interpolate(method='linear', inplace=True)
 
     # concatenate asset data and additional data + drop non trading days like weekends
     environment = pd.DataFrame(pd.concat([portfolio_ds, feature_ds], axis=1)).dropna()
 
     # saves the environment data as a csv file
-    environment.to_csv(config.ENV_DATA)
-    logger.info(f'Done collecting data. Environment shape: {environment.shape}')
-    logger.info(f'Data has been saved to {config.ENV_DATA}')
-    print(environment.head(5))
+    environment.to_csv(ENV_CSV)
+    logger.debug(f'Done collecting data. Environment shape: {environment.shape}')
+    logger.debug(f'Data has been saved to {ENV_CSV}')
+
+
+if __name__ == '__main__':
+    main()

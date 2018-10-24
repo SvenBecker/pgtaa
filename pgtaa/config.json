@@ -1,7 +1,7 @@
 {
     "data": {
         "date": {
-            "start": "2013-01-01",
+            "start": "2005-01-01",
             "end": "2018-10-20"
         },
         "assets": {
@@ -10,30 +10,35 @@
             "IWO": "iShares Russell 2000 Growth ETF",
             "IWN": "iShares Russell 2000 Value ETF",
             "EFA": "iShares MSCI EAFE ETF",
-            "IEMG": "iShares Core MSCI Emerging Markets ETF",
             "TIP": "iShares TIPS Bond ETF",
-            "GOVT": "iShares U.S. Treasury Bond ETF",
             "GLD": "SPDR Gold Trust",
             "VNQ": "Vanguard REIT ETF"
         },
-        "yahoo_data": {
-            "EURUSD=X": "EUR/USD",
-            "GBPUSD": "GBP/USD",
-            "AUDUSD=X": "AUD/USD",
-            "JPY=X": "USD/JPY",
-            "CNY=X": "USD/CNY"
-        },
         "fred_data": {
-            "A191RL1Q225SBEA": "GDP",
-            "UNRATE": "Unemployment",
-            "CPIAUCSL": "CPI adj",
-            "INDPRO": "IP",
-            "GFDEGDQ188S": "Federal Debt",
-            "PCEC": "PCEC",
-            "FEDFUNDS": "Interest Rate",
-            "DPCREDIT": "Credit Rate",
-            "DGS10": "10Y-Treas-Rate",
-            "PAYEMS": "Payroll Employment"
+            "DEXUSEU": "USD/EUR",
+            "DEXCHUS": "CNY/USD",
+            "DEXJPUS": "JPY/USD",
+            "DEXCAUS": "CAD/USD",
+            "DEXUSUK": "USD/GBP",
+            "DEXSZUS": "CHF/USD",
+            "RBUSBIS": "Real Broad Effective Exchange Rate for United States",
+            "WILL5000INDFC": "Wilshire 5000 Total Market Full Cap Index",
+            "NASDAQCOM": "NASDAQ Composite Index",
+            "RU3000TR": "Russell 3000 Total Market Index",
+            "STLFSI": "St. Louis Fed Financial Stress Index",
+            "USSLIND": "Leading Index for the United States",
+            "NFCI": "Chicago Fed National Financial Conditions Index",
+            "A191RL1Q225SBEA": "Real Gross Domestic Product",
+            "UNRATE": "Civilian Unemployment Ratet",
+            "CPIAUCSL": "Consumer Price Index for All Urban Consumers: All Items",
+            "INDPRO": "Industrial Production Index",
+            "GFDEGDQ188S": "Federal Debt: Total Public Debt as Percent of Gross Domestic Product",
+            "PCEC": "Personal Consumption Expenditures",
+            "FEDFUNDS": "Effective Federal Funds Rate",
+            "DPCREDIT": "Primary Credit Rate",
+            "INTDSRUSM193N": "Interest Rates Discount Rate for United States",
+            "DGS10": "10-Year Treasury Constant Maturity Rate",
+            "PAYEMS": "All Employees: Total Nonfarm Payrolls"
         }
     },
     "environment": {

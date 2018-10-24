@@ -1,15 +1,14 @@
 import os
-from pathlib import Path
+#TODO from pathlib import Path
 import numpy as np
 import pandas as pd
 from collections import namedtuple
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import scale, normalize
 
-import pgtaa.config as cfg
-
-from pgtaa.core.optimize import WeightOptimize
-from pgtaa.core.utils import get_flatten
+from .. import config as cfg
+from ..core.optimize import WeightOptimize
+from ..core.utils import get_flatten
 
 """
 PortfolioEnv is the main Environment class. DataEnv is being used as some kind of

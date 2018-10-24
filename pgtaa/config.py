@@ -1,30 +1,36 @@
 import datetime
 import json
-import pprint
-from pathlib import Path
+import os
+from pprint import pprint
+
+
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # load json config file and parse arguments
-with open('config.json') as f:
+with open(os.path.join(ROOT_DIR, 'config.json')) as f:
     config = json.load(f)
+
+
+def show_config(): pprint(config);
 
 # ------------------------ data --------------------------------- #
 
 # portfolio assets
 ASSETS = list(config["data"]["assets"].keys())
+ASSET_NAMES = list(config["data"]["assets"].values())
 
 # number of assets
 NB_ASSETS = len(ASSETS)
 
 # start date for historical data
-_start = list(map(int, config["data"]["date"]["start"].split("-")))
-START = datetime.date(*_start)
+__start = list(map(int, config["data"]["date"]["start"].split("-")))
+START = datetime.date(*__start)
 
 # end date for historical data
-_end = list(map(int, config["data"]["date"]["end"].split("-")))
-END = datetime.date(*_end)
+__end = list(map(int, config["data"]["date"]["end"].split("-")))
+END = datetime.date(*__end)
 
-# data symbols from yahoo and fred
-YAHOO_DATA = config["data"]["yahoo_data"]
+# data symbols for Federal Reserve St. Louis Economic Data
 FRED_DATA = config["data"]["fred_data"]
 
 # --------------------- environment------------------------------- #
@@ -65,16 +71,16 @@ AGENT_TEST_EPISODES = config["agent"]["test"]["episodes"]
 
 # ---------------- files, folders and paths --------------------- #
 
-ROOT_DIR = Path(".")
+# folders
+ENV_DIR = os.path.join(ROOT_DIR, "environment")
+DATA_DIR = os.path.join(ENV_DIR, "data")
+PRED_DIR = os.path.join(ENV_DIR, "saves")
+MODEL_DIR = os.path.join(ROOT_DIR, "model")
+AGENT = os.path.join(MODEL_DIR, "saves")
+BOARD = os.path.join(MODEL_DIR, "board")
 
 # files
-ENV_CSV = ROOT_DIR / "environment" / "data" / "environment.csv"
-
-# folders
-MODEL_DIR = ROOT_DIR / "model"
+ENV_CSV = os.path.join(DATA_DIR, "environment.csv")
+ASSETS_CSV = os.path.join(DATA_DIR, "assets.csv")
 
 # --------------------------------------------------------------- #
-
-
-def show_config():
-    pprint.pprint(config)
