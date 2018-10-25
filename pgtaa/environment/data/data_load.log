@@ -1,114 +1,109 @@
-16:57:50 DEBUG: Collecting data for ['iShares Russell 1000 Value ETF', 'iShares Russell 1000 Growth ETF', 'iShares Russell 2000 Growth ETF', 'iShares Russell 2000 Value ETF', 'iShares MSCI EAFE ETF', 'iShares TIPS Bond ETF', 'SPDR Gold Trust', 'Vanguard REIT ETF'] from yahoo
-16:57:50 DEBUG: Time frame: 2005-01-01 - 2018-10-20
+00:03:42 DEBUG: Collecting data for ['iShares Russell 1000 Value ETF (IWD)', 'iShares Russell 1000 Growth ETF (IWF)', 'iShares Russell 2000 Growth ETF (IWO)', 'iShares Russell 2000 Value ETF (IWN)', 'iShares MSCI EAFE ETF (EFA)', 'iShares TIPS Bond ETF (TIP)', 'SPDR Gold Trust (GLD)', 'Vanguard REIT ETF (VNQ)'] from yahoo
+00:03:42 DEBUG: Time frame: 2005-01-01 - 2018-10-20
 
-16:57:50 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
-16:57:51 DEBUG: https://finance.yahoo.com:443 "GET /quote/IWD/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
-16:57:52 INFO:    Data for iShares Russell 1000 Value ETF has been collected
-16:57:52 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
-16:57:52 DEBUG: https://finance.yahoo.com:443 "GET /quote/IWF/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
-16:57:52 INFO:    Data for iShares Russell 1000 Growth ETF has been collected
-16:57:52 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
-16:57:53 DEBUG: https://finance.yahoo.com:443 "GET /quote/IWO/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
-16:57:53 INFO:    Data for iShares Russell 2000 Growth ETF has been collected
-16:57:53 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
-16:57:54 DEBUG: https://finance.yahoo.com:443 "GET /quote/IWN/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
-16:57:54 INFO:    Data for iShares Russell 2000 Value ETF has been collected
-16:57:54 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
-16:57:55 DEBUG: https://finance.yahoo.com:443 "GET /quote/EFA/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
-16:57:55 INFO:    Data for iShares MSCI EAFE ETF has been collected
-16:57:55 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
-16:57:56 DEBUG: https://finance.yahoo.com:443 "GET /quote/TIP/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
-16:57:56 INFO:    Data for iShares TIPS Bond ETF has been collected
-16:57:56 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
-16:57:57 DEBUG: https://finance.yahoo.com:443 "GET /quote/GLD/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
-16:57:57 INFO:    Data for SPDR Gold Trust has been collected
-16:57:57 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
-16:57:58 DEBUG: https://finance.yahoo.com:443 "GET /quote/VNQ/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
-16:57:58 INFO:    Data for Vanguard REIT ETF has been collected
-16:57:58 DEBUG: Data shape: (3475, 8)
+00:03:42 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
+00:03:44 DEBUG: https://finance.yahoo.com:443 "GET /quote/IWD/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
+00:03:44 INFO:    Data for iShares Russell 1000 Value ETF (IWD) has been collected
+00:03:44 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
+00:03:45 DEBUG: https://finance.yahoo.com:443 "GET /quote/IWF/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
+00:03:45 INFO:    Data for iShares Russell 1000 Growth ETF (IWF) has been collected
+00:03:45 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
+00:03:46 DEBUG: https://finance.yahoo.com:443 "GET /quote/IWO/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
+00:03:46 INFO:    Data for iShares Russell 2000 Growth ETF (IWO) has been collected
+00:03:46 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
+00:03:47 DEBUG: https://finance.yahoo.com:443 "GET /quote/IWN/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
+00:03:47 INFO:    Data for iShares Russell 2000 Value ETF (IWN) has been collected
+00:03:47 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
+00:03:48 DEBUG: https://finance.yahoo.com:443 "GET /quote/EFA/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
+00:03:48 INFO:    Data for iShares MSCI EAFE ETF (EFA) has been collected
+00:03:48 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
+00:03:48 DEBUG: https://finance.yahoo.com:443 "GET /quote/TIP/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
+00:03:49 INFO:    Data for iShares TIPS Bond ETF (TIP) has been collected
+00:03:49 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
+00:03:49 DEBUG: https://finance.yahoo.com:443 "GET /quote/GLD/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
+00:03:50 INFO:    Data for SPDR Gold Trust (GLD) has been collected
+00:03:50 DEBUG: Starting new HTTPS connection (1): finance.yahoo.com:443
+00:03:50 DEBUG: https://finance.yahoo.com:443 "GET /quote/VNQ/history?period1=1104548400&period2=1540087199&interval=1d&frequency=1d&filter=history HTTP/1.1" 200 None
+00:03:50 INFO:    Data for Vanguard REIT ETF (VNQ) has been collected
+00:03:50 DEBUG: Data shape: (3475, 8)
 
-16:57:58 DEBUG: Collecting data for ['USD/EUR', 'CNY/USD', 'JPY/USD', 'CAD/USD', 'USD/GBP', 'CHF/USD', 'Real Broad Effective Exchange Rate for United States', 'Wilshire 5000 Total Market Full Cap Index', 'NASDAQ Composite Index', 'Russell 3000 Total Market Index', 'St. Louis Fed Financial Stress Index', 'Leading Index for the United States', 'Chicago Fed National Financial Conditions Index', 'Real Gross Domestic Product', 'Civilian Unemployment Ratet', 'Consumer Price Index for All Urban Consumers: All Items', 'Industrial Production Index', 'Federal Debt: Total Public Debt as Percent of Gross Domestic Product', 'Personal Consumption Expenditures', 'Effective Federal Funds Rate', 'Primary Credit Rate', 'Interest Rates Discount Rate for United States', '10-Year Treasury Constant Maturity Rate', 'All Employees: Total Nonfarm Payrolls'] from fred
-16:57:58 DEBUG: Time frame: 2005-01-01 - 2018-10-20
+00:03:50 DEBUG: Collecting data for ['USD/EUR', 'CNY/USD', 'JPY/USD', 'CAD/USD', 'USD/GBP', 'CHF/USD', 'Real Broad Effective Exchange Rate for United States', 'Wilshire 5000 Total Market Full Cap Index', 'NASDAQ Composite Index', 'Russell 3000 Total Market Index', 'St. Louis Fed Financial Stress Index', 'Leading Index for the United States', 'Chicago Fed National Financial Conditions Index', 'Real Gross Domestic Product', 'Civilian Unemployment Ratet', 'Consumer Price Index for All Urban Consumers: All Items', 'Industrial Production Index', 'Federal Debt: Total Public Debt as Percent of Gross Domestic Product', 'Personal Consumption Expenditures', 'Effective Federal Funds Rate', 'Primary Credit Rate', 'Interest Rates Discount Rate for United States', '10-Year Treasury Constant Maturity Rate', 'All Employees: Total Nonfarm Payrolls'] from fred
+00:03:50 DEBUG: Time frame: 2005-01-01 - 2018-10-20
 
-16:57:58 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:57:59 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DEXUSEU HTTP/1.1" 200 24202
-16:57:59 INFO:    Data for USD/EUR has been collected
-16:57:59 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:01 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DEXCHUS HTTP/1.1" 200 36384
-16:58:01 INFO:    Data for CNY/USD has been collected
-16:58:01 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:03 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DEXJPUS HTTP/1.1" 200 57901
-16:58:03 INFO:    Data for JPY/USD has been collected
-16:58:03 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:04 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DEXCAUS HTTP/1.1" 200 55496
-16:58:04 INFO:    Data for CAD/USD has been collected
-16:58:04 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:06 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DEXUSUK HTTP/1.1" 200 56905
-16:58:06 INFO:    Data for USD/GBP has been collected
-16:58:06 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:08 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DEXSZUS HTTP/1.1" 200 57141
-16:58:08 INFO:    Data for CHF/USD has been collected
-16:58:08 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:08 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=RBUSBIS HTTP/1.1" 200 1450
-16:58:08 INFO:    Data for Real Broad Effective Exchange Rate for United States has been collected
-16:58:08 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:10 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=WILL5000INDFC HTTP/1.1" 200 50352
-16:58:10 INFO:    Data for Wilshire 5000 Total Market Full Cap Index has been collected
-16:58:10 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:12 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=NASDAQCOM HTTP/1.1" 200 70100
-16:58:12 INFO:    Data for NASDAQ Composite Index has been collected
-16:58:12 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:14 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=RU3000TR HTTP/1.1" 200 59442
-16:58:14 INFO:    Data for Russell 3000 Total Market Index has been collected
-16:58:14 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:15 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=STLFSI HTTP/1.1" 200 6353
-16:58:15 INFO:    Data for St. Louis Fed Financial Stress Index has been collected
-16:58:15 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:15 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=USSLIND HTTP/1.1" 200 1749
-16:58:15 INFO:    Data for Leading Index for the United States has been collected
-16:58:15 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:15 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=NFCI HTTP/1.1" 200 10237
-16:58:15 INFO:    Data for Chicago Fed National Financial Conditions Index has been collected
-16:58:16 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:16 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=A191RL1Q225SBEA HTTP/1.1" 200 1139
-16:58:16 INFO:    Data for Real Gross Domestic Product has been collected
-16:58:16 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:16 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=UNRATE HTTP/1.1" 200 2633
-16:58:16 INFO:    Data for Civilian Unemployment Ratet has been collected
-16:58:16 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:16 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=CPIAUCSL HTTP/1.1" 200 3851
-16:58:16 INFO:    Data for Consumer Price Index for All Urban Consumers: All Items has been collected
-16:58:16 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:17 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=INDPRO HTTP/1.1" 200 6811
-16:58:17 INFO:    Data for Industrial Production Index has been collected
-16:58:17 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:17 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=GFDEGDQ188S HTTP/1.1" 200 1477
-16:58:17 INFO:    Data for Federal Debt: Total Public Debt as Percent of Gross Domestic Product has been collected
-16:58:17 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:17 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=PCEC HTTP/1.1" 200 2043
-16:58:17 INFO:    Data for Personal Consumption Expenditures has been collected
-16:58:17 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:18 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=FEDFUNDS HTTP/1.1" 200 3168
-16:58:18 INFO:    Data for Effective Federal Funds Rate has been collected
-16:58:18 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:18 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DPCREDIT HTTP/1.1" 200 9273
-16:58:18 INFO:    Data for Primary Credit Rate has been collected
-16:58:18 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:19 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=INTDSRUSM193N HTTP/1.1" 200 2277
-16:58:19 INFO:    Data for Interest Rates Discount Rate for United States has been collected
-16:58:19 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:22 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DGS10 HTTP/1.1" 200 55591
-16:58:22 INFO:    Data for 10-Year Treasury Constant Maturity Rate has been collected
-16:58:22 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
-16:58:22 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=PAYEMS HTTP/1.1" 200 5080
-16:58:22 INFO:    Data for All Employees: Total Nonfarm Payrolls has been collected
-16:58:22 DEBUG: Data shape: (3648, 24)
+00:03:50 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:03:51 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DEXUSEU HTTP/1.1" 200 24202
+00:03:51 INFO:    Data for USD/EUR has been collected
+00:03:51 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:03:51 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DEXCHUS HTTP/1.1" 200 36384
+00:03:52 INFO:    Data for CNY/USD has been collected
+00:03:52 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:03:54 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DEXJPUS HTTP/1.1" 200 57901
+00:03:54 INFO:    Data for JPY/USD has been collected
+00:03:54 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:03:56 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DEXCAUS HTTP/1.1" 200 55496
+00:03:56 INFO:    Data for CAD/USD has been collected
+00:03:56 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:03:58 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DEXUSUK HTTP/1.1" 200 56905
+00:03:58 INFO:    Data for USD/GBP has been collected
+00:03:58 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:00 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DEXSZUS HTTP/1.1" 200 57141
+00:04:00 INFO:    Data for CHF/USD has been collected
+00:04:00 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:00 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=RBUSBIS HTTP/1.1" 200 1450
+00:04:00 INFO:    Data for Real Broad Effective Exchange Rate for United States has been collected
+00:04:00 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:03 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=WILL5000INDFC HTTP/1.1" 200 50352
+00:04:03 INFO:    Data for Wilshire 5000 Total Market Full Cap Index has been collected
+00:04:03 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:05 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=NASDAQCOM HTTP/1.1" 200 70100
+00:04:05 INFO:    Data for NASDAQ Composite Index has been collected
+00:04:05 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:07 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=RU3000TR HTTP/1.1" 200 59442
+00:04:07 INFO:    Data for Russell 3000 Total Market Index has been collected
+00:04:07 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:07 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=STLFSI HTTP/1.1" 200 6353
+00:04:07 INFO:    Data for St. Louis Fed Financial Stress Index has been collected
+00:04:07 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:07 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=USSLIND HTTP/1.1" 200 1749
+00:04:07 INFO:    Data for Leading Index for the United States has been collected
+00:04:07 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:08 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=NFCI HTTP/1.1" 200 10220
+00:04:08 INFO:    Data for Chicago Fed National Financial Conditions Index has been collected
+00:04:08 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:08 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=A191RL1Q225SBEA HTTP/1.1" 200 1139
+00:04:08 INFO:    Data for Real Gross Domestic Product has been collected
+00:04:08 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:08 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=UNRATE HTTP/1.1" 200 2633
+00:04:08 INFO:    Data for Civilian Unemployment Ratet has been collected
+00:04:08 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:09 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=CPIAUCSL HTTP/1.1" 200 3851
+00:04:09 INFO:    Data for Consumer Price Index for All Urban Consumers: All Items has been collected
+00:04:09 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:09 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=INDPRO HTTP/1.1" 200 6811
+00:04:09 INFO:    Data for Industrial Production Index has been collected
+00:04:09 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:09 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=GFDEGDQ188S HTTP/1.1" 200 1477
+00:04:09 INFO:    Data for Federal Debt: Total Public Debt as Percent of Gross Domestic Product has been collected
+00:04:09 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:10 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=PCEC HTTP/1.1" 200 2043
+00:04:10 INFO:    Data for Personal Consumption Expenditures has been collected
+00:04:10 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:10 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=FEDFUNDS HTTP/1.1" 200 3168
+00:04:10 INFO:    Data for Effective Federal Funds Rate has been collected
+00:04:10 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:11 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DPCREDIT HTTP/1.1" 200 9275
+00:04:11 INFO:    Data for Primary Credit Rate has been collected
+00:04:11 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:11 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=INTDSRUSM193N HTTP/1.1" 200 2277
+00:04:11 INFO:    Data for Interest Rates Discount Rate for United States has been collected
+00:04:11 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:13 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=DGS10 HTTP/1.1" 200 55593
+00:04:13 INFO:    Data for 10-Year Treasury Constant Maturity Rate has been collected
+00:04:13 DEBUG: Starting new HTTPS connection (1): fred.stlouisfed.org:443
+00:04:14 DEBUG: https://fred.stlouisfed.org:443 "GET /graph/fredgraph.csv?id=PAYEMS HTTP/1.1" 200 5080
+00:04:14 INFO:    Data for All Employees: Total Nonfarm Payrolls has been collected
+00:04:14 DEBUG: Data shape: (3648, 24)
 
-16:58:22 DEBUG: Data request runtime: 31.728332996368408
-16:58:22 DEBUG: Done collecting data. Environment shape: (3471, 32)
-16:58:22 DEBUG: Data has been saved to E:\pgtaa\pgtaa\environment\data\environment.csv
-17:03:50 DEBUG: Loaded backend module://ipykernel.pylab.backend_inline version unknown.
-17:06:57 DEBUG: Loaded backend module://ipykernel.pylab.backend_inline version unknown.
-17:07:19 DEBUG: Loaded backend module://ipykernel.pylab.backend_inline version unknown.
-17:07:38 DEBUG: Loaded backend module://ipykernel.pylab.backend_inline version unknown.
-17:07:49 DEBUG: Loaded backend module://ipykernel.pylab.backend_inline version unknown.
+00:04:14 DEBUG: Data request runtime: 31.57940101623535
+00:04:14 DEBUG: Done collecting data. Environment shape: (3471, 32)
+00:04:14 DEBUG: Data has been saved to E:\pgtaa\pgtaa\environment\data\environment.csv

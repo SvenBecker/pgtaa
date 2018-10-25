@@ -6,9 +6,9 @@ from collections import namedtuple
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import scale, normalize
 
-from .. import config as cfg
-from ..core.optimize import WeightOptimize
-from ..core.utils import get_flatten
+#from ..config import *
+from pgtaa.core.optimize import WeightOptimize
+from pgtaa.core.utils import get_flatten
 
 """
 PortfolioEnv is the main Environment class. DataEnv is being used as some kind of
@@ -447,7 +447,7 @@ class PortfolioEnv(object):
             :param state_labels: (tuple) number of labels for state discretization per state row
         """
         # build logger
-        self.logger = get_logger(filename='tmp/env.log', logger_name='EnvLogger')
+        #self.logger = get_logger(filename='tmp/env.log', logger_name='EnvLogger')
         self.data = data
         self.horizon = horizon
         self.window_size = window_size
@@ -729,22 +729,12 @@ class PortfolioEnv(object):
             return dict(shape=(self.nb_assets,), type='float')
 
 
-def pretty_print_state(array, assets=cfg.ASSETS):
-    """
-    Args:
-        :param array: (object) state array
-        :param assets: (list) asset names
-    :return: state as pandas data frame object
-    """
-    index = ['Weights', 'Scaled Mean', 'Scaled Variance', 'Scaled Predicted Return'] + assets
-    return pd.DataFrame(array, index=index, columns=assets)
-
 
 if __name__ == '__main__':
     '''
     Just to see if the environment is working as intended
     '''
-    df = pd.read_csv(cfg.ENV_DATA, sep=r';|,', engine='python')
+    df = pd.read_csv(ENV_CSV, sep=r';|,', engine='python')
     df = df.drop(df.columns[0], axis=1)
     env = PortfolioEnv(df, action_type='signal_softmax', discrete_states=True, action_space='unbounded')
     print(env.actions)

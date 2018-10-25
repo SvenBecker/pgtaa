@@ -5,14 +5,14 @@
             "end": "2018-10-20"
         },
         "assets": {
-            "IWD": "iShares Russell 1000 Value ETF",
-            "IWF": "iShares Russell 1000 Growth ETF",
-            "IWO": "iShares Russell 2000 Growth ETF",
-            "IWN": "iShares Russell 2000 Value ETF",
-            "EFA": "iShares MSCI EAFE ETF",
-            "TIP": "iShares TIPS Bond ETF",
-            "GLD": "SPDR Gold Trust",
-            "VNQ": "Vanguard REIT ETF"
+            "IWD": "iShares Russell 1000 Value ETF (IWD)",
+            "IWF": "iShares Russell 1000 Growth ETF (IWF)",
+            "IWO": "iShares Russell 2000 Growth ETF (IWO)",
+            "IWN": "iShares Russell 2000 Value ETF (IWN)",
+            "EFA": "iShares MSCI EAFE ETF (EFA)",
+            "TIP": "iShares TIPS Bond ETF (TIP)",
+            "GLD": "SPDR Gold Trust (GLD)",
+            "VNQ": "Vanguard REIT ETF (VNQ)"
         },
         "fred_data": {
             "DEXUSEU": "USD/EUR",

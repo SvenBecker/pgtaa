@@ -5,10 +5,8 @@ from tqdm import tqdm
 import pandas as pd
 import pandas_datareader as web
 
-from ..core.colorized import ColourHandler, color_bar
-from ..config import *
-#from pgtaa.core.colorized import ColourHandler, color_bar
-#from pgtaa.config import *
+from pgtaa.core.colorized import ColourHandler, color_bar
+from pgtaa.config import *
 
 
 logging.basicConfig(
@@ -17,22 +15,15 @@ logging.basicConfig(
     filemode='w',
     format='%(asctime)s %(levelname)s: %(message)s',
     datefmt='%H:%M:%S')
-
 logger = logging.getLogger(__name__)
-
-# add stream handler which prints to stderr
 #ch = logging.StreamHandler(sys.stdout)
 ch = ColourHandler()
-
 # modify stream handler log format
 #formatter_ch = logging.Formatter('%(levelname)s - %(message)s')
 formatter_ch = logging.Formatter('%(message)s')
-
 ch.setFormatter(formatter_ch)
-
 # set stream handler log level
 ch.setLevel(logging.DEBUG)
-
 logger.addHandler(ch)
 
 
@@ -104,6 +95,19 @@ class RequestData:
         return ds
 
 
+def upgrade_ds(df):
+    assets = df.iloc[:, :NB_ASSETS]
+
+    # linear return
+    pct_1d = assets.pct_change(1)
+
+    pct_10d = assets.pct_change(10)
+    creturn_10d = pct_1d.cumsum()
+    creturn_10d = assets
+
+
+
+
 def main():
     __start = time.time()
 
@@ -115,12 +119,6 @@ def main():
                              names=FRED_DATA.values()).ds
 
     logger.debug(f'Data request runtime: {time.time() - __start}')
-
-    # saves an csv file (is being used to do some visualization)
-    portfolio_ds.to_csv(ASSETS_CSV)
-
-    # for the environment only the asset daily returns are required + drop first row
-    portfolio_ds.pct_change(1).dropna(inplace=True)
 
     # concatenate yahoo and fred data and interpolate missing data
     feature_ds.interpolate(method='linear', inplace=True)
