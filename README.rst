@@ -1,5 +1,5 @@
 =====
-pgtaa
+A Policy Gradient Approach for Tactical Asset Allocation
 =====
 
 
@@ -14,16 +14,25 @@ pgtaa
         :alt: Documentation Status
 
 
-A Policy Gradient Approach for Tactical Asset Allocation
-------------------------------------------------------
+Introduction
+-------------
 
+
+Configurations
+--------------
+
+To change the configurations of the environment you can either change them directly using the
+`config.json <pgtaa/config.json>`_ file
+or run the `config.py <pgtaa/config.py>`_ file using the flags listed below.
+Changes to the data basis can also been made through the `config.json` file but it is not recommend.
+Otherwise you have to retrain the supportive prediction models. 
 
 
 Data
 ----
 
 Data can be requested using `pandas_datareader <https://pandas-datareader.readthedocs.io/en/latest/>`_.
-So far this project support `Yahoo Finance <https://finance.yahoo.com/>`_,
+So far this project supports `Yahoo Finance <https://finance.yahoo.com/>`_,
 `Federal Reserve of Economic Data (FRED) <https://www.stlouisfed.org/>`_,
 `The Investors Exchange <https://iextrading.com/>`_,
 `Moscow Exchange <https://www.moex.com/en/>`_ and `Stooq <https://stooq.com/>`_

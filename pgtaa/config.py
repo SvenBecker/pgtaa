@@ -5,14 +5,27 @@ import os
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# load json config file and parse arguments
-with open(os.path.join(ROOT_DIR, 'config.json')) as f:
-    config = json.load(f)
+# load json config file and parse arguments, try self modified json file first
+try:
+    with open(os.path.join(ROOT_DIR, 'mod_config.json')) as f:
+        config = json.load(f)
+except FileNotFoundError:
+    with open(os.path.join(ROOT_DIR, 'config.json')) as f:
+        config = json.load(f)
 
 
 def show_config():
     from pprint import pprint
     pprint(config)
+
+
+def build_mlp(cells):
+    mlp = {"layer_" + str(i): c for i, c in enumerate(cells)}
+    return mlp
+
+
+def build_agent():
+    pass
 
 
 # ------------------------ data --------------------------------- #
@@ -109,10 +122,36 @@ TEST_CSV = os.path.join(DATA_DIR, "test.csv")
 # --------------------------------------------------------------- #
 
 
-def build_mlp(cells):
-    mlp = {"layer_" + str(i): c for i, c in enumerate(cells)}
-    return mlp
+if __name__ == "__main__":
+    from argparse import ArgumentParser
 
+    def overwrite_env_config(configuration: str, value):
+        with open(os.path.join(ROOT_DIR, 'config.json')) as f:
+            config = json.load(f)
+        config["environment"][configuration] = value
+        with open('mod_config.json', 'w') as fp:
+            json.dump(config, fp)
 
-def build_agent():
-    pass
+    parser = ArgumentParser()
+    parser.add_argument('-s', '--split', help="Train test split", type=float, default=TRAIN_TEST_SPLIT)
+    parser.add_argument('-e', '--epochs', type=int,
+                        help="Number of epochs", default=EPOCHS)
+    parser.add_argument('-t', '--train-episodes', type=int,
+                        help="Number of training episodes per epoch", default=TRAIN_EPISODES)
+    parser.add_argument('-ve', '--val-episodes', type=int,
+                        help="Number of validation episodes", default=VALID_EPISODES)
+    parser.add_argument('-te', '--test-episodes', type=int,
+                        help="Number of test episodes", default=TEST_EPISODES)
+    parser.add_argument('-w', '--window', type=int,
+                        help="Window size", default=WINDOW_SIZE)
+    parser.add_argument('-hz', '--horizon', type=int,
+                        help="Investment horizon / number of time steps for each episode", default=HORIZON)
+    parser.add_argument('-r', '--risk-aversion', type=float,
+                        help="Rate of exposure to risk", default=HORIZON)
+    parser.add_argument('-p', '--portfolio-init-value', type=float,
+                        help="Initial portfolio value", default=PORTFOLIO_INIT_VALUE)
+    parser.add_argument('-c', '--costs', type=float,
+                        help="Transaction costs (w.r.t. transaction volume)", default=COSTS)
+    arguments = parser.parse_args()
+    for arg in vars(arguments):
+        overwrite_env_config(arg, getattr(arguments, arg))
