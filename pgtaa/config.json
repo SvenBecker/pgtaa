@@ -1,4 +1,32 @@
 {
+    "environment": {
+        "risk_aversion": 1.0,
+        "portfolio_init_value": 1000,
+        "horizon": 30,
+        "window_size": 100,
+        "train_test_split": 0.9,
+        "epochs": 200,
+        "train_episodes": 200,
+        "val_episodes": 100,
+        "test_episodes": 100,
+        "costs": 0.0025
+    },
+    "predictor_model": {
+        "learning_rate": 0.01,
+        "batch_size": 32,
+        "epochs": 20
+    },
+    "agent": {
+        "train": {
+            "learning_rate": 1e-4,
+            "batch_size": 20,
+            "episodes": 100,
+            "epochs": 200
+        },
+        "net_config": {
+            "cells": [32, 32, 32]
+        }
+    },
     "data": {
         "date": {
             "start": "2005-01-01",
@@ -50,36 +78,14 @@
             "DGS10": "10-Year Treasury Constant Maturity Rate",
             "PAYEMS": "All Employees: Total Nonfarm Payrolls"
         },
-        "google_data": {
+        "iex_data": {
 
-        }
-    },
-    "environment": {
-        "risk_aversion": 1.0,
-        "portfolio_init_value": 1000,
-        "horizon": 30,
-        "window_size": 100,
-        "train_test_split": 0.9,
-        "epochs": 200,
-        "train_episodes": 200,
-        "val_episodes": 100,
-        "test_episodes": 100,
-        "costs": 0.0025
-    },
-    "predictor_model": {
-        "learning_rate": 0.01,
-        "batch_size": 32,
-        "epochs": 20
-    },
-    "agent": {
-        "train": {
-            "learning_rate": 1e-4,
-            "batch_size": 20,
-            "episodes": 100,
-            "epochs": 200
         },
-        "net_config": {
-            "cells": [32, 32, 32]
+        "moex_data": {
+
+        },
+        "stooq_data": {
+
         }
     }
 }

@@ -24,7 +24,7 @@ ch.setLevel(logging.DEBUG)
 logger.addHandler(ch)
 
 # all supported data source websites
-data_sources = {"fred": FRED_DATA, "yahoo": YAHOO_DATA, "google": GOOGLE_DATA}
+data_sources = {"fred": FRED_DATA, "yahoo": YAHOO_DATA, "iex": IEX_DATA, 'moex': MOEX_DATA, "stooq": STOOQ_DATA}
 
 class RequestData:
     def __init__(
@@ -65,8 +65,12 @@ class RequestData:
                     r = web.DataReader(symbol, self.source, self.start, self.end)
                 elif self.source == "yahoo":
                     r = web.DataReader(symbol, self.source, self.start, self.end)['Adj Close']
-                elif self.source == "google":
-                    r = web.DataReader(symbol, self.source, self.start, self.end)['Adj Close']
+                elif self.source == "iex":
+                    r = web.DataReader(symbol, self.source, self.start, self.end)['close']
+                elif self.source == "moex":
+                    r = web.DataReader(symbol, self.source, self.start, self.end)['CLOSE']
+                elif self.source == "stooq":
+                    r = web.DataReader(symbol, self.source, self.start, self.end)['Close']
                 else:
                     raise ValueError("No valid data source given!")
                 logger.info(f'   Data for {name} has been collected')
@@ -104,7 +108,7 @@ def _availability_check(data, source):
                            start=START, end=END, names=data.values()).ds
 
 
-def main():
+def main(save: bool=True):
     __start = time.time()
 
     ds = []
@@ -115,7 +119,6 @@ def main():
 
     feature_ds = pd.concat(ds, axis=1)
     portfolio_ds = feature_ds[ASSET_NAMES]
-    portfolio_ds.to_csv(ASSETS_CSV)
     feature_ds.drop(ASSET_NAMES, axis=1, inplace=True)
 
     # concatenate yahoo and fred data and interpolate missing data
@@ -124,20 +127,18 @@ def main():
     # concatenate asset data and additional data + drop non trading days like weekends
     environment = pd.DataFrame(pd.concat([portfolio_ds, feature_ds], axis=1)).dropna()
 
-    environment.to_csv(ENV_CSV)
-    logger.debug(f'Done collecting data. '
-                 f'Environment shape: {environment.shape}')
-
     # data split into a train and a test set
     train = environment.iloc[:int(TRAIN_TEST_SPLIT * len(environment))]
     test = environment.iloc[int(TRAIN_TEST_SPLIT * len(environment)):]
+    if save:
+        environment.to_csv(ENV_CSV)
+        train.to_csv(TRAIN_CSV)
+        test.to_csv(TEST_CSV)
+        logger.debug(f'Files have been saved to:'
+                     f'\n{ENV_CSV}\n{TRAIN_CSV}\n{TEST_CSV}')
+    logger.debug(f'Environment shape: {environment.shape}')
     logger.debug(f'Train set size {train.shape}')
     logger.debug(f'Test set size {test.shape}')
-    train.to_csv(TRAIN_CSV)
-    test.to_csv(TEST_CSV)
-    logger.debug(f'Files have been saved to:'
-                 f'\n{ENV_CSV}\n{ASSETS_CSV}'
-                 f'\n{TRAIN_CSV}\n{TEST_CSV}')
 
 
 if __name__ == '__main__':

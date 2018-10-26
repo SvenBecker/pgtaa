@@ -36,7 +36,14 @@ FRED_DATA = config["data"]["fred_data"]
 # data symbols for Yahoo Finance
 YAHOO_DATA = config["data"]["yahoo_data"]
 
-GOOGLE_DATA = config["data"]["google_data"]
+# data symbols for the Investors Exchange
+IEX_DATA = config["data"]["iex_data"]
+
+# data symbols for the Moscow Exchange
+MOEX_DATA = config["data"]["moex_data"]
+
+# data symbols for Stooq Index Data
+STOOQ_DATA = config["data"]["stooq_data"]
 
 # --------------------- environment------------------------------- #
 

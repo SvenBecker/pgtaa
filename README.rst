@@ -14,17 +14,25 @@ pgtaa
         :alt: Documentation Status
 
 
+A Policy Gradient Approach for Tactical Asset Allocation
+------------------------------------------------------
+
+
 
 Data
 ----
 
 Data can be requested using `pandas_datareader <https://pandas-datareader.readthedocs.io/en/latest/>`_.
-So far this project support `Yahoo Finance <https://finance.yahoo.com/>`_
-and `Federal Reserve of Economic Data (FRED) <https://www.stlouisfed.org/>`_
-as data resources.
+So far this project support `Yahoo Finance <https://finance.yahoo.com/>`_,
+`Federal Reserve of Economic Data (FRED) <https://www.stlouisfed.org/>`_,
+`The Investors Exchange <https://iextrading.com/>`_,
+`Moscow Exchange <https://www.moex.com/en/>`_ and `Stooq <https://stooq.com/>`_
+as data resources. Only the (adjusted if available) closing prices will be tracked.
 
+..
+Notice: Unfortunately there are often changes in the APIs of those website so I can't guarantee that those sites are
+still being supported some time onwards. At the time writing those supported websites are indeed working as intended.
 
-Policy Gradient Approach for Tactical Asset Allocation
 
 
 * Free software: Apache Software License 2.0
