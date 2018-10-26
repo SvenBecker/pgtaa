@@ -106,19 +106,24 @@ def upgrade_ds(df):
     creturn_10d = assets
 
 
-
-
 def main():
     __start = time.time()
 
-    portfolio_ds = RequestData(ASSETS, source='yahoo', names=ASSET_NAMES, start=START, end=END).ds
+    #portfolio_ds = RequestData(ASSETS, source='yahoo', names=ASSET_NAMES, start=START, end=END).ds
 
     # the feature data set is primarily for training additional market predictor models
     # data was obtained from https://fred.stlouisfed.org/
-    feature_ds = RequestData(list(FRED_DATA.keys()), source='fred', start=START, end=END,
-                             names=FRED_DATA.values()).ds
+    fred_ds = RequestData(list(FRED_DATA.keys()), source='fred', start=START, end=END,
+                          names=FRED_DATA.values()).ds
+    yahoo_ds = RequestData(list(YAHOO_DATA.keys()), source='yahoo', start=START, end=END,
+                           names=YAHOO_DATA.values()).ds
 
     logger.debug(f'Data request runtime: {time.time() - __start}')
+
+    feature_ds = pd.concat([fred_ds, yahoo_ds], axis=1)
+    portfolio_ds = feature_ds[ASSETS]
+    portfolio_ds.to_csv(ASSETS_CSV)
+    feature_ds.drop(ASSETS, axis=1, inplace=True)
 
     # concatenate yahoo and fred data and interpolate missing data
     feature_ds.interpolate(method='linear', inplace=True)
@@ -130,6 +135,12 @@ def main():
     environment.to_csv(ENV_CSV)
     logger.debug(f'Done collecting data. Environment shape: {environment.shape}')
     logger.debug(f'Data has been saved to {ENV_CSV}')
+
+    # data split into a train and a test set
+    train = environment.iloc[:int(TRAIN_TEST_SPLIT * len(environment))]
+    test = environment.iloc[int(TRAIN_TEST_SPLIT * len(environment)):]
+    train.to_csv(TRAIN_CSV)
+    test.to_csv(TEST_CSV)
 
 
 if __name__ == '__main__':

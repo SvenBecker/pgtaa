@@ -1,7 +1,6 @@
 import datetime
 import json
 import os
-from pprint import pprint
 
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -11,15 +10,15 @@ with open(os.path.join(ROOT_DIR, 'config.json')) as f:
     config = json.load(f)
 
 
-def show_config(): pprint(config);
+def show_config():
+    from pprint import pprint
+    pprint(config)
 
 # ------------------------ data --------------------------------- #
 
 # portfolio assets
 ASSETS = list(config["data"]["assets"].keys())
 ASSET_NAMES = list(config["data"]["assets"].values())
-
-# number of assets
 NB_ASSETS = len(ASSETS)
 
 # start date for historical data
@@ -32,6 +31,9 @@ END = datetime.date(*__end)
 
 # data symbols for Federal Reserve St. Louis Economic Data
 FRED_DATA = config["data"]["fred_data"]
+
+# data symbols for Yahoo Finance
+YAHOO_DATA = config["data"]["yahoo_data"]
 
 # --------------------- environment------------------------------- #
 
@@ -82,5 +84,7 @@ BOARD = os.path.join(MODEL_DIR, "board")
 # files
 ENV_CSV = os.path.join(DATA_DIR, "environment.csv")
 ASSETS_CSV = os.path.join(DATA_DIR, "assets.csv")
+TRAIN_CSV = os.path.join(DATA_DIR, "train.csv")
+TEST_CSV = os.path.join(DATA_DIR, "test.csv")
 
 # --------------------------------------------------------------- #

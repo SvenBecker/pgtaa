@@ -13,13 +13,12 @@ class WeightOptimize:
             self,
             asset_returns: np.ndarray,
             covariance_matrix: np.ndarray,
-            nb_assets: int=10,
             risk_aversion: float=1.0
     ):
 
         self.asset_returns = asset_returns
         self.covariance_matrix = covariance_matrix
-        self.nb_assets = nb_assets
+        self.nb_assets = asset_returns.shape[1]
         self.risk_aversion = risk_aversion
         self.expected_return = np.mean(self.asset_returns, axis=0)
 

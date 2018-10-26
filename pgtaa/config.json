@@ -14,6 +14,16 @@
             "GLD": "SPDR Gold Trust (GLD)",
             "VNQ": "Vanguard REIT ETF (VNQ)"
         },
+        "yahoo_data": {
+            "IWD": "iShares Russell 1000 Value ETF (IWD)",
+            "IWF": "iShares Russell 1000 Growth ETF (IWF)",
+            "IWO": "iShares Russell 2000 Growth ETF (IWO)",
+            "IWN": "iShares Russell 2000 Value ETF (IWN)",
+            "EFA": "iShares MSCI EAFE ETF (EFA)",
+            "TIP": "iShares TIPS Bond ETF (TIP)",
+            "GLD": "SPDR Gold Trust (GLD)",
+            "VNQ": "Vanguard REIT ETF (VNQ)"
+        },
         "fred_data": {
             "DEXUSEU": "USD/EUR",
             "DEXCHUS": "CNY/USD",
@@ -44,9 +54,14 @@
     "environment": {
         "risk_aversion": 1.0,
         "portfolio_init_value": 1000,
-        "horizon": 20,
+        "horizon": 30,
         "window_size": 100,
-        "train_test_split": 0.85
+        "train_test_split": 0.85,
+        "epochs": 200,
+        "train_episodes": 200,
+        "val_episodes": 100,
+        "test_episodes": 100,
+        "costs": 0.0025
     },
     "predictor_model": {
         "learning_rate": 0.01,
@@ -59,12 +74,6 @@
             "batch_size": 20,
             "episodes": 100,
             "epochs": 200
-        },
-        "valid": {
-            "episodes": 50
-        },
-        "test": {
-            "episodes": 100
         },
         "net_config": {
             "layers": 3,
