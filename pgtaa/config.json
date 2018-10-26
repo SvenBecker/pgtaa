@@ -56,7 +56,7 @@
         "portfolio_init_value": 1000,
         "horizon": 30,
         "window_size": 100,
-        "train_test_split": 0.85,
+        "train_test_split": 0.9,
         "epochs": 200,
         "train_episodes": 200,
         "val_episodes": 100,
@@ -76,7 +76,6 @@
             "epochs": 200
         },
         "net_config": {
-            "layers": 3,
             "cells": [32, 32, 32]
         }
     }

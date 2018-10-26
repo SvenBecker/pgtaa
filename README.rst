@@ -15,6 +15,14 @@ pgtaa
 
 
 
+Data
+----
+
+Data can be requested using `pandas_datareader <https://pandas-datareader.readthedocs.io/en/latest/>`_.
+So far this project support `Yahoo Finance <https://finance.yahoo.com/>`_
+and `Federal Reserve of Economic Data (FRED) <https://www.stlouisfed.org/>`_
+as data resources.
+
 
 Policy Gradient Approach for Tactical Asset Allocation
 

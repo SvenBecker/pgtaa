@@ -14,6 +14,7 @@ def show_config():
     from pprint import pprint
     pprint(config)
 
+
 # ------------------------ data --------------------------------- #
 
 # portfolio assets
@@ -37,9 +38,32 @@ YAHOO_DATA = config["data"]["yahoo_data"]
 
 # --------------------- environment------------------------------- #
 
+# (transaction-)costs for selling assets based on trading volume
+COST_SELLING = 0.0025
+# (transaction-)costs for buying assets based on trading volume
+COST_BUYING = 0.0025
+# fix costs for trading (absolute)
+COST_FIX = 0
+
+# number of training epochs
+EPOCHS = config["environment"]["epochs"]
+
+# relative transaction costs
+COSTS = config["environment"]["costs"]
+
+# number of training episodes
+TRAIN_EPISODES = config["environment"]["train_episodes"]
+
+# number of validation episodes
+VALID_EPISODES = config["environment"]["val_episodes"]
+
+# number of test episodes
+TEST_EPISODES = config["environment"]["test_episodes"]
+
 # constant rate of relative risk aversion
 RISK_AVERSION = config["environment"]["risk_aversion"]
 
+# initial portfolio for each trading episode
 PORTFOLIO_INIT_VALUE = config["environment"]["risk_aversion"]
 
 # max number of time steps for each episode
@@ -48,28 +72,14 @@ HORIZON = config["environment"]["horizon"]
 # length of historical data provided on each time step
 WINDOW_SIZE = config["environment"]["window_size"]
 
+# training and test set split size
 TRAIN_TEST_SPLIT = config["environment"]["train_test_split"]
-
-# (transaction-)costs for selling assets based on trading volume
-COST_SELLING = 0.0025
-# (transaction-)costs for buying assets based on trading volume
-COST_BUYING = 0.0025
-# fix costs for trading (absolute)
-COST_FIX = 0
 
 # --------------------------- agent------------------------------ #
 
 # agent train
 AGENT_LR = config["agent"]["train"]["learning_rate"]
 AGENT_TRAIN_BATCH_SIZE = config["agent"]["train"]["batch_size"]
-AGENT_EPISODES = config["agent"]["train"]["episodes"]
-AGENT_EPOCHS = config["agent"]["train"]["epochs"]
-
-# agent validate
-AGENT_VALID_EPISODES = config["agent"]["valid"]["episodes"]
-
-# agent test
-AGENT_TEST_EPISODES = config["agent"]["test"]["episodes"]
 
 # ---------------- files, folders and paths --------------------- #
 
@@ -88,3 +98,12 @@ TRAIN_CSV = os.path.join(DATA_DIR, "train.csv")
 TEST_CSV = os.path.join(DATA_DIR, "test.csv")
 
 # --------------------------------------------------------------- #
+
+
+def build_mlp(cells):
+    mlp = {"layer_" + str(i): c for i, c in enumerate(cells)}
+    return mlp
+
+
+def build_agent():
+    pass

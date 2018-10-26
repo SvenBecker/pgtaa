@@ -3,7 +3,7 @@ import numpy as np
 from pgtaa.core.optimize import WeightOptimize
 
 
-class DataLoader(object):
+class PortfolioInit(object):
     def __init__(self,
                  df: pd.DataFrame,
                  assets: list,
@@ -32,18 +32,20 @@ class DataLoader(object):
         episode_starts = np.random.permutation(range(self.window, len(df)))
         self.episode_starts = episode_starts[:episodes]
         self.val_episodes = episode_starts[episodes:episodes + val_eps]
-        self.episode_window = self.get_windows()
-        self.val_episodes = self.episode_window[-self.val_episodes:]
+        self.episode_window = self._build_windows()
+        self.val_window = self.episode_window[self.episodes:]
         self.episode_window = self.episode_window[:self.episodes]
         self.episode_windows = [np.random.permutation(self.episode_window)
                                 for _ in range(self.epochs)]
         self.init_weights = {}
+        self.predictions = {}
 
-    def get_windows(self):
+    def _build_windows(self):
         window = []
         for episode in (self.episode_starts + self.val_episodes):
             w = self.df.iloc[episode-self.window:episode + 1]
             assets = w.iloc[, :self.assets].values
+            # TODO: Add model predictions
             self.init_weights[episode] = WeightOptimize(
                 covariance_matrix=np.cov(assets),
                 asset_returns=assets,
@@ -51,4 +53,13 @@ class DataLoader(object):
             window.append(w)
         return window
 
+    def get_windows(self):
+        # episode_windows has the shape:
+        # (epochs x episodes x time steps x state rows x state columns)
 
+        # val_window has the shape:
+        # (episode x time_steps x state rows x state columns)
+
+        # init_weights is a dictionary having the pairs:
+        # (episode_start : initial weights)
+        return self.episode_windows, self.val_window, self.init_weights
