@@ -23,6 +23,8 @@ ch.setFormatter(formatter_ch)
 ch.setLevel(logging.DEBUG)
 logger.addHandler(ch)
 
+# all supported data source websites
+data_sources = {"fred": FRED_DATA, "yahoo": YAHOO_DATA, "google": GOOGLE_DATA}
 
 class RequestData:
     def __init__(
@@ -54,7 +56,7 @@ class RequestData:
 
         self.ds = self._concat_data()
 
-    def get_data(self, symbol, name):
+    def _get_data(self, symbol, name):
         start = time.time()
         while True:
             try:
@@ -62,6 +64,8 @@ class RequestData:
                 if self.source == "fred":
                     r = web.DataReader(symbol, self.source, self.start, self.end)
                 elif self.source == "yahoo":
+                    r = web.DataReader(symbol, self.source, self.start, self.end)['Adj Close']
+                elif self.source == "google":
                     r = web.DataReader(symbol, self.source, self.start, self.end)['Adj Close']
                 else:
                     raise ValueError("No valid data source given!")
@@ -84,7 +88,7 @@ class RequestData:
         with tqdm(total=len(self.symbols),
                   bar_format=color_bar("white")) as pbar:
             for symbol, name in zip(self.symbols, self.names):
-                data.append(self.get_data(symbol, name))
+                data.append(self._get_data(symbol, name))
                 pbar.update(1)
         ds = pd.DataFrame(pd.concat(data, axis=1))
         ds.columns = self.names
@@ -92,24 +96,27 @@ class RequestData:
         return ds
 
 
+def _availability_check(data, source):
+    if len(data) is 0:
+        return pd.DataFrame()
+    else:
+        return RequestData(list(data.keys()), source=source,
+                           start=START, end=END, names=data.values()).ds
+
+
 def main():
     __start = time.time()
 
-    # portfolio_ds = RequestData(ASSETS, source='yahoo', names=ASSET_NAMES, start=START, end=END).ds
-
-    # the feature data set is primarily for training additional market predictor models
-    # data was obtained from https://fred.stlouisfed.org/
-    fred_ds = RequestData(list(FRED_DATA.keys()), source='fred',
-                          start=START, end=END, names=FRED_DATA.values()).ds
-    yahoo_ds = RequestData(list(YAHOO_DATA.keys()), source='yahoo',
-                           start=START, end=END, names=YAHOO_DATA.values()).ds
+    ds = []
+    for source, data in data_sources.items():
+        ds.append(_availability_check(data, source))
 
     logger.debug(f'Data request runtime: {time.time() - __start}')
 
-    feature_ds = pd.concat([fred_ds, yahoo_ds], axis=1)
-    portfolio_ds = feature_ds[ASSETS]
+    feature_ds = pd.concat(ds, axis=1)
+    portfolio_ds = feature_ds[ASSET_NAMES]
     portfolio_ds.to_csv(ASSETS_CSV)
-    feature_ds.drop(ASSETS, axis=1, inplace=True)
+    feature_ds.drop(ASSET_NAMES, axis=1, inplace=True)
 
     # concatenate yahoo and fred data and interpolate missing data
     feature_ds.interpolate(method='linear', inplace=True)

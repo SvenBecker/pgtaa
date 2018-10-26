@@ -36,6 +36,8 @@ FRED_DATA = config["data"]["fred_data"]
 # data symbols for Yahoo Finance
 YAHOO_DATA = config["data"]["yahoo_data"]
 
+GOOGLE_DATA = config["data"]["google_data"]
+
 # --------------------- environment------------------------------- #
 
 # (transaction-)costs for selling assets based on trading volume
