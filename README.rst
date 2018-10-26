@@ -23,9 +23,11 @@ Configurations
 
 To change the configurations of the environment you can either change them directly using the
 `config.json <pgtaa/config.json>`_ file
-or run the `config.py <pgtaa/config.py>`_ file using the flags listed below.
+or run the `config.py <pgtaa/config.py>`_ file using the flags listed below. By calling the
+`config.py <pgtaa/config.py>`_ file a new config file `mod_config.json` will be created. If you want to go back to
+the default setting just delete that config file.
 Changes to the data basis can also been made through the `config.json` file but it is not recommend.
-Otherwise you have to retrain the supportive prediction models. 
+Otherwise you have to retrain the supportive prediction models.
 
 
 Data

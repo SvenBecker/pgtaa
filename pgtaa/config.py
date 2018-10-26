@@ -19,6 +19,15 @@ def show_config():
     pprint(config)
 
 
+def remove_config():
+    file = os.path.join(ROOT_DIR, "mod_config.json")
+    if os.path.exists(file):
+        os.remove(file)
+        print("File mod_config.json has been removed")
+    else:
+        print("The config file does not exist")
+
+
 def build_mlp(cells):
     mlp = {"layer_" + str(i): c for i, c in enumerate(cells)}
     return mlp
@@ -152,6 +161,6 @@ if __name__ == "__main__":
                         help="Initial portfolio value", default=PORTFOLIO_INIT_VALUE)
     parser.add_argument('-c', '--costs', type=float,
                         help="Transaction costs (w.r.t. transaction volume)", default=COSTS)
-    arguments = parser.parse_args()
-    for arg in vars(arguments):
-        overwrite_env_config(arg, getattr(arguments, arg))
+    env_args = parser.parse_args()
+    for arg in vars(env_args):
+        overwrite_env_config(arg, getattr(env_args, arg))
