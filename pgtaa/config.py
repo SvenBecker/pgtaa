@@ -2,7 +2,7 @@ import datetime
 import json
 import os
 
-
+# root directory of the project
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # load json config file and parse arguments, try self modified json file first
@@ -18,8 +18,21 @@ def show_config():
     from pprint import pprint
     pprint(config)
 
+def overwrite_env_config(configuration: str, value):
+    """
+    You can overwrite some configurations either directly in the config.json file or through this function.
+    :param configuration: configuration setting which should be replaced
+    :param value: replacing value
+    """
+    with open(os.path.join(ROOT_DIR, 'config.json')) as f:
+        config = json.load(f)
+    config["environment"][configuration] = value
+    with open('mod_config.json', 'w') as fp:
+        json.dump(config, fp)
+
 
 def remove_config():
+    # removes the modified config file
     file = os.path.join(ROOT_DIR, "mod_config.json")
     if os.path.exists(file):
         os.remove(file)
@@ -134,13 +147,6 @@ TEST_CSV = os.path.join(DATA_DIR, "test.csv")
 if __name__ == "__main__":
     from argparse import ArgumentParser
 
-    def overwrite_env_config(configuration: str, value):
-        with open(os.path.join(ROOT_DIR, 'config.json')) as f:
-            config = json.load(f)
-        config["environment"][configuration] = value
-        with open('mod_config.json', 'w') as fp:
-            json.dump(config, fp)
-
     parser = ArgumentParser()
     parser.add_argument('-s', '--split', help="Train test split", type=float, default=TRAIN_TEST_SPLIT)
     parser.add_argument('-e', '--epochs', type=int,
@@ -162,5 +168,6 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--costs', type=float,
                         help="Transaction costs (w.r.t. transaction volume)", default=COSTS)
     env_args = parser.parse_args()
+
     for arg in vars(env_args):
         overwrite_env_config(arg, getattr(env_args, arg))
