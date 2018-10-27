@@ -29,6 +29,8 @@ def overwrite_env_config(configuration: str, value):
     config["environment"][configuration] = value
     with open('mod_config.json', 'w') as fp:
         json.dump(config, fp)
+        print("Changes have been made to the config file. "
+              "This changes will be saved in mod_config.json.")
 
 
 def remove_config():
