@@ -9,7 +9,8 @@
         "train_episodes": 200,
         "val_episodes": 100,
         "test_episodes": 100,
-        "costs": 0.0025
+        "costs": 0.0025,
+        "seed": 42
     },
     "predictor_model": {
         "learning_rate": 0.01,

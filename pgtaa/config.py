@@ -119,6 +119,9 @@ WINDOW_SIZE = config["environment"]["window_size"]
 # training and test set split size
 TRAIN_TEST_SPLIT = config["environment"]["train_test_split"]
 
+# training and test set split size
+SEED = config["environment"]["seed"]
+
 # --------------------------- agent------------------------------ #
 
 # agent train
@@ -148,7 +151,7 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
 
     parser = ArgumentParser()
-    parser.add_argument('-s', '--split', help="Train test split", type=float, default=TRAIN_TEST_SPLIT)
+    parser.add_argument('-sp', '--split', help="Train test split (decimal)", type=float, default=TRAIN_TEST_SPLIT)
     parser.add_argument('-e', '--epochs', type=int,
                         help="Number of epochs", default=EPOCHS)
     parser.add_argument('-t', '--train-episodes', type=int,
@@ -167,6 +170,7 @@ if __name__ == "__main__":
                         help="Initial portfolio value", default=PORTFOLIO_INIT_VALUE)
     parser.add_argument('-c', '--costs', type=float,
                         help="Transaction costs (w.r.t. transaction volume)", default=COSTS)
+    parser.add_argument('-s', '--seed', help="Set random seed", type=int, default=SEED)
     env_args = parser.parse_args()
 
     for arg in vars(env_args):
