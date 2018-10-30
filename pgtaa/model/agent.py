@@ -95,7 +95,7 @@ class PPOAgent(Agent):
         """
         See Superclass
         :param clip_param: clipping value if given, else kl_penalty
-        :param entropy_factor: factor 
+        :param entropy_factor: factor
         """
         super(PPOAgent, self).__init__(
             state_space,
@@ -125,6 +125,10 @@ class PPOAgent(Agent):
 
     def kl_penalty(self, x):
         return x
+
+    def action_loss(self):
+        action_loss = 0
+        return action_loss
 
     def ppo_loss(self, action_loss, entropy):
         loss = action_loss - entropy * self.entropy_factor

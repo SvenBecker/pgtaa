@@ -3,7 +3,8 @@ import os
 import numpy as np
 import pandas as pd
 from collections import namedtuple
-from tensorflow.keras.models import load_model
+import torch
+#from tensorflow.keras.models import load_model
 from sklearn.preprocessing import scale, normalize
 
 #from ..config import *
@@ -16,10 +17,10 @@ data source class and the Portfolio class keeps track of the current portfolio.
 DataEnv <-> PortfolioEnv <-> Portfolio
 """
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'        # hide TensorFlow warnings
+#os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'        # hide TensorFlow warnings
 
 
-_Step = namedtuple('Step', ['state', 'reward', 'done', 'info'])
+_Step = namedtuple('Step', ['state', 'reward', 'info'])
 
 _PortfolioInfo = namedtuple('Portfolio',
                             ['weights',
@@ -39,17 +40,15 @@ _PortfolioInfo = namedtuple('Portfolio',
 
 def env_step(state: np.ndarray,
              reward: float,
-             done: bool,
              **kwargs):
     """
     Args:
         :param state: (object) state representation for the agent
         :param reward: (float) step reward
-        :param done: (bool) true if episode has finished
         :param kwargs: additional info
-    :return: namedtuple object
+        :return: namedtuple object
     """
-    return _Step(state, reward, done, kwargs)
+    return _Step(state, reward, kwargs)
 
 
 def portfolio_info(weights: np.ndarray,
@@ -84,6 +83,7 @@ def portfolio_info(weights: np.ndarray,
 
 
 class DataEnv:
+    #TODO swap this for the dataloader
     # provides data for the portfolio environment class.
     def __init__(
             self,
@@ -107,7 +107,8 @@ class DataEnv:
         self.nb_assets = len(assets)
         self.scaler = scaler                    # import input scaler
         #self.standardize = standardize
-        self.predictor = load_model(predictor)  # load the predictor model
+        self.predictor = torch.load()
+        #self.predictor = load_model(predictor)  # load the predictor model
         self.episodes = episodes
         self.episode = 0
         self.epoch = 0
@@ -729,7 +730,78 @@ class PortfolioEnv(object):
             return dict(shape=(self.nb_assets,), type='float')
 
 
+class Env(object):
 
+    def _step(self, action):
+
+        # update current portfolio based on agent action
+        new_weights, cost, portfolio_value = self.portfolio.update(action)
+        benchmark_weights = self.weigths
+        self.episode_costs += cost
+
+        # see PortfolioEnv.execute() for explanation
+        info = self.data_env.get_window(episode_step=self.step)
+        self._update(info)
+
+        # make a step forward
+        reward, weights, new_portfolio_value = self.portfolio.get_next_step(self.asset_returns[-1], self.covariance)
+
+        self.episode_reward += reward
+
+        info = portfolio_info(weights=new_weights,
+                              old_weights=self.weights,
+                              new_weights=weights,
+                              init_weights=self.init_weights,
+                              asset_returns=self.asset_returns[-1],
+                              predictions=self.prediction,
+                              portfolio_value=portfolio_value,
+                              new_portfolio_value=new_portfolio_value,
+                              old_portfolio_value=self.portfolio_value,
+                              portfolio_return=new_portfolio_value / portfolio_value - 1,
+                              portfolio_variance=self.portfolio.variance,
+                              sharpe_ratio=self.portfolio.sharpe,
+                              transaction_costs=cost)
+
+        # update portfolio values
+        self.weights = new_weights
+        self.portfolio_value = new_portfolio_value
+        self.portfolio_variance = self.portfolio.variance
+
+        # update state
+        self.state = np.concatenate((np.reshape(self.weights, (1, self.nb_assets)), self.__state), axis=0)
+
+        # flatten the state array and reduce state size -> returns 1d array
+        state = get_flatten(state)
+
+        # estimate benchmark = buy and hold value
+        benchmark =
+
+        self.step += 1
+
+        # should not be happening when using a runner
+        if self.step > self.horizon:
+            self.reset()
+
+        return env_step(state, reward, benchmark, info=info)
+
+    def execute(self, action):
+        """
+        Args:
+            :param action: (list) agent actions to execute
+        """
+        return self._step(action)
+
+
+    @property
+    def action(self):
+        return self.nb_assets
+
+    @property
+    def state(self):
+        # => weight + scaled mean + scaled variance + scaled predictions + correlation
+        return 0.5 * self.nb_assets * (self.nb_assets + 7)
+
+"""
 if __name__ == '__main__':
     '''
     Just to see if the environment is working as intended
@@ -744,3 +816,4 @@ if __name__ == '__main__':
         result = env.execute(agent_action)
         print('\nStep', step + 1)
         print(pretty_print_state(env.state))
+"""
