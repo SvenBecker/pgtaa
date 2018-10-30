@@ -43,11 +43,16 @@ class WeightOptimize:
 
         # using naive weights for initial guess
         x0 = np.array([1 / self.nb_assets for _ in range(self.nb_assets)])
-
+        """
         # the sum of all weights has to be equal one
         constrain = {'type': 'eq', 'fun': lambda x: np.sum(x) - 1}
 
         # calculate 'optimal' portfolio weights
         solution = minimize(self.objective_function, x0, method=method, constraints=constrain, bounds=bnds)
+        """
+        solution = minimize(self.objective_function, x0,
+                            method=method,
+                            constraints={'type': 'eq', 'fun': lambda x: np.sum(x) - 1},
+                            bounds=bnds)
 
         return solution.x

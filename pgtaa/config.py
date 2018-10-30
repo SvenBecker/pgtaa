@@ -43,15 +43,6 @@ def remove_config():
         print("The config file does not exist")
 
 
-def build_mlp(cells):
-    mlp = {"layer_" + str(i): c for i, c in enumerate(cells)}
-    return mlp
-
-
-def build_agent():
-    pass
-
-
 # ------------------------ data --------------------------------- #
 
 # portfolio assets
@@ -124,11 +115,18 @@ TRAIN_TEST_SPLIT = config["environment"]["train_test_split"]
 # training and test set split size
 SEED = config["environment"]["seed"]
 
-# --------------------------- agent------------------------------ #
+# --------------------------- agent ----------------------------- #
 
-# agent train
-AGENT_LR = config["agent"]["train"]["learning_rate"]
-AGENT_TRAIN_BATCH_SIZE = config["agent"]["train"]["batch_size"]
+AGENT = config["agent"]["type"]
+BATCH_SIZE = config["agent"]["batch_size"]
+CLIP = config["agent"]["clip"]
+
+# ------------------------- network ----------------------------- #
+
+LAYERS = config["network"]["cells"]
+LR = config["network"]["learning_rate"]
+OPTIMIZER = config["network"]["optimizer"]
+
 
 # ---------------- files, folders and paths --------------------- #
 
@@ -137,7 +135,7 @@ ENV_DIR = os.path.join(ROOT_DIR, "environment")
 DATA_DIR = os.path.join(ENV_DIR, "data")
 PRED_DIR = os.path.join(ENV_DIR, "saves")
 MODEL_DIR = os.path.join(ROOT_DIR, "model")
-AGENT = os.path.join(MODEL_DIR, "saves")
+AGENT_SAVES = os.path.join(MODEL_DIR, "saves")
 BOARD = os.path.join(MODEL_DIR, "board")
 
 # files
