@@ -23,6 +23,7 @@ _PortfolioInfo = namedtuple('Portfolio',
 class Portfolio:
     """
     Provides some useful utility for basic portfolio calculations.
+    Keeps track of portfolio development (like variance, return, sharpe ratio etc.).
     Has to be called for each new episode.
     """
     def __init__(
@@ -39,10 +40,10 @@ class Portfolio:
         self.weights = None
         self.new_weights = None
         self.covariance = None
-        self.portfolio_return = 0
-        self.cost = 0
-        self.variance = 0
-        self.sharpe = 0
+        self.portfolio_return = 0.
+        self.cost = 0.
+        self.variance = 0.
+        self.sharpe = 0.
 
     def __str__(self):
         return str(self.__class__.__name__)
@@ -85,7 +86,7 @@ class Portfolio:
         step_reward = self._get_reward()
 
         # update portfolio value
-        self.portfolio_value = self.portfolio_value * (1 + self.portfolio_return)
+        self.portfolio_value *= (self.portfolio_return + 1)
 
         # calculate sharpe ratio
         self.sharpe = self._sharpe_ratio()
@@ -102,8 +103,8 @@ class Portfolio:
 
     def _get_weights(self, asset_returns):
         # change of portfolio weights given possible deviations in asset returns.
-        return [wi * (1 + ri) / sum([w * (1 + r) for w, r in zip(self.new_weights, asset_returns)])
-                for wi, ri in zip(self.new_weights, asset_returns)]
+        # multiplication by broadcating
+        return asset_returns * self.new_weights / np.sum(asset_returns * self.new_weights)
 
     def _get_cost(self, weight_diff):
         # cost for trading based on trading volume

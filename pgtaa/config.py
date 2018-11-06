@@ -123,7 +123,7 @@ CLIP = config["agent"]["clip"]
 
 # ------------------------- network ----------------------------- #
 
-LAYERS = config["network"]["cells"]
+LAYERS = config["network"]["layers"]
 LR = config["network"]["learning_rate"]
 OPTIMIZER = config["network"]["optimizer"]
 

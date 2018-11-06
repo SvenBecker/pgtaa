@@ -13,6 +13,11 @@ def get_flatten(array: np.ndarray):
     tri = np.concatenate(tri, axis=0)
     return np.concatenate((top.flatten(), tri.flatten()))
 
+def flatten_state(a: np.ndarray):
+    # flattens the covariance matrix
+    assert a.shape[0] != a.shape[1], "array has to be quadratic"
+    return a[np.tri(a.shape[0]) == True]
+
 
 def get_scaler(train: np.ndarray, feature_range: tuple=(0, 1)):
     scaler = MinMaxScaler(feature_range=feature_range)
@@ -20,7 +25,7 @@ def get_scaler(train: np.ndarray, feature_range: tuple=(0, 1)):
 
 
 def read_data(file):
-    data = pd.read_csv(file, parse_dates=[0], dtype=np.float64, index_col=0)
+    data = pd.read_csv(file, parse_dates=True, index_col=0)
     return data.values
 
 
@@ -30,7 +35,7 @@ def get_split(x: np.ndarray, y: np.ndarray, split: float=0.85):
     return train_x, train_y, test_x, test_y
 
 
-class PrepData(object):
+class PrepData:
     def __int__(
         self,
         file_name: str,

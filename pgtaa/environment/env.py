@@ -774,7 +774,7 @@ class Env(object):
         state = get_flatten(state)
 
         # estimate benchmark = buy and hold value
-        benchmark =
+        benchmark = pass
 
         self.step += 1
 
