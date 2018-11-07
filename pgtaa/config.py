@@ -132,7 +132,7 @@ OPTIMIZER = config["network"]["optimizer"]
 
 # folders
 ENV_DIR = os.path.join(ROOT_DIR, "environment")
-DATA_DIR = os.path.join(ENV_DIR, "data")
+DATA_DIR = os.path.join(ROOT_DIR, "data")
 PRED_DIR = os.path.join(ENV_DIR, "saves")
 MODEL_DIR = os.path.join(ROOT_DIR, "model")
 AGENT_SAVES = os.path.join(MODEL_DIR, "saves")

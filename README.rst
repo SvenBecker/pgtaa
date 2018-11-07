@@ -1,7 +1,6 @@
-=====
+=========================================================
 A Policy Gradient Approach for Tactical Asset Allocation
-=====
-
+=========================================================
 
 .. image:: https://img.shields.io/travis/SvenBecker/pgtaa.svg
         :target: https://travis-ci.org/SvenBecker/pgtaa
@@ -14,18 +13,19 @@ A Policy Gradient Approach for Tactical Asset Allocation
 .. image:: https://img.shields.io/badge/licence-MIT-red.svg   
         :target: https://github.com/SvenBecker/pgtaa/blob/master/LICENSE
         :alt: Licence
-        
 
 .. image:: https://img.shields.io/badge/version-v0.1.0-blue.svg
         :target: https://github.com/SvenBecker/pgtaa/releases
         :alt: GitHub release
 
+.. contents::
 
-
+.. toctree::
 
 Introduction
 -------------
 
+.. image:: images/preview.gif
 
 Configurations
 --------------
@@ -49,11 +49,10 @@ So far this project supports `Yahoo Finance <https://finance.yahoo.com/>`_,
 `Moscow Exchange <https://www.moex.com/en/>`_ and `Stooq <https://stooq.com/>`_
 as data resources. Only the (adjusted if available) closing prices will be tracked.
 
-..
-Notice: Unfortunately there are often changes in the APIs of those website so I can't guarantee that those sites are
-still being supported some time onwards. At the time writing those supported websites are indeed working as intended.
 
+.. note:: Unfortunately there are often changes in the APIs of those website so I can't guarantee that those sites are still being supported some time onwards. At the time writing those supported websites are indeed working as intended.
 
+.. warning:: Currently TensorFlow only supports Python version <=3.6. 
 
 * Free software: `MIT License <https://github.com/SvenBecker/pgtaa/blob/master/LICENSE>`_
 * Documentation: https://pgtaa.readthedocs.io.

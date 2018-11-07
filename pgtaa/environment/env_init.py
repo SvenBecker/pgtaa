@@ -114,7 +114,8 @@ class PortfolioInit(object):
                  window_size: int,
                  epochs: int = 1,
                  risk_aversion: float=1.0,
-                 val_eps: int=None
+                 val_eps: int=None,
+                 predictors: list=None
                  ):
         """
         :param data: evaluation dataframe
@@ -131,6 +132,7 @@ class PortfolioInit(object):
         self.window_size = window_size
         self.nb_assets = nb_assets
         self.risk_aversion = risk_aversion
+        self.predictors = predictors
 
         # random permutation of episode starting point
         episode_starts = np.random.permutation(range(self.window_size, len(data) - self.horizon))
@@ -149,9 +151,9 @@ class PortfolioInit(object):
             windows.append(window[epoch_permutations[i]])
             init_weights.append(weights[epoch_permutations[i]])
             #preds.append(pred[epoch_permutations[i]])
-        # windows has the shape (epochs, nb_epsides, horizon, window_size, columns)     4D
-        # init_weights has the shape (epochs, nb_episodes, columns)                     2D
-        # preds has the shape (epochs, nb_episodes, horizon, columns)                   3D
+        # windows has the shape (epochs, nb_epsides, horizon, window_size, columns)     5D
+        # init_weights has the shape (epochs, nb_episodes, columns)                     3D
+        # preds has the shape (epochs, nb_episodes, horizon, predictors, columns)       4D
         return np.array(windows), np.array(init_weights), np.array(preds)
 
     def _build_windows(self):
@@ -161,14 +163,17 @@ class PortfolioInit(object):
         predictions = []
         for episode in self.episode_starts:
             ws = []
+            prd = []
             assets = self.assets[episode - self.window_size: episode]
             weight = WeightOptimize(covariance_matrix=np.cov(assets.T), asset_returns=assets, risk_aversion=self.risk_aversion).optimize_weights()
             for s in range(self.horizon):
-                ws.append(self.data[episode - self.window_size + s : episode + s])
-            # TODO: Add model predictions
+                w = self.data[episode - self.window_size + s : episode + s]
+                ws.append(w)
+                # TODO: Add model predictions
+                prd.append([predictor.predict(w) for predictor in self.predictors])
             w_episodes.append(ws)
             init_weights.append(weight)
-        # w_episodes has the shape (nb_epsides, horizon, window_size, columns)  4D
-        # init_weights has the shape (nb_episodes, columns)                     2D
-        # predictions has the shape (nb_episodes, horizon, columns)             3D
+        # w_episodes has the shape (nb_epsides, horizon, window_size, columns)      4D
+        # init_weights has the shape (nb_episodes, columns)                         2D
+        # predictions has the shape (nb_episodes, horizon, num_predictors, columns) 3D
         return np.array(w_episodes), np.array(init_weights), np.array(predictions)
