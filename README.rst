@@ -12,7 +12,7 @@ A Policy Gradient Approach for Tactical Asset Allocation
         :alt: Documentation Status        
 
 .. image:: https://img.shields.io/hexpm/l/:package.svg   
-        :target: https://github.com/SvenBecker/pgtaa/LICENSE.md
+        :target: https://github.com/SvenBecker/pgtaa/LICENSE
         :alt: Licence
         
 
