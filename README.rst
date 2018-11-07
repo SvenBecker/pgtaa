@@ -11,12 +11,12 @@ A Policy Gradient Approach for Tactical Asset Allocation
         :target: https://pgtaa.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status        
 
-.. image:: https://img.shields.io/hexpm/l/:package.svg   
+.. image:: https://img.shields.io/badge/licence-MIT-red.svg   
         :target: https://github.com/SvenBecker/pgtaa/blob/master/LICENSE
         :alt: Licence
         
 
-.. image:: https://img.shields.io/github/release/qubyte/rubidium.svg
+.. image:: https://img.shields.io/badge/version-v0.1.0-blue.svg
         :target: https://github.com/SvenBecker/pgtaa/releases
         :alt: GitHub release
 
@@ -55,7 +55,7 @@ still being supported some time onwards. At the time writing those supported web
 
 
 
-* Free software: Apache Software License 2.0
+* Free software: MIT License
 * Documentation: https://pgtaa.readthedocs.io.
 
 
