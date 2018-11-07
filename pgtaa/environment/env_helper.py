@@ -1,5 +1,6 @@
 import numpy as np  
 import pandas as pd
+from tempfile import TemporaryFile
 from pgtaa.core.optimize import WeightOptimize
 
 
@@ -95,8 +96,14 @@ class Portfolio:
 
         return step_reward, self.weights, self.portfolio_value
 
-    def reset(self, weights, covariance):
-        # resets the portfolio value and the asset weights to their initial value
+    def reset(self, weights: np.ndarray, covariance: np.ndarray):
+        """Resets the portfolio value and the asset weights to their initial value.
+        
+        Arguments:
+            weights {np.ndarray} -- current asset weights
+            covariance {np.ndarray} -- variance-covariance matrix
+        """
+  
         self.portfolio_value = self.init_portfolio_value
         self.weights = weights
         self.covariance = covariance
@@ -225,6 +232,7 @@ class PortfolioInit(object):
             windows.append(window[epoch_permutations[i]])
             init_weights.append(weights[epoch_permutations[i]])
             #preds.append(pred[epoch_permutations[i]])
+        
         # windows has the shape (epochs, nb_epsides, horizon, window_size, columns)     5D
         # init_weights has the shape (epochs, nb_episodes, columns)                     3D
         # preds has the shape (epochs, nb_episodes, horizon, predictors, columns)       4D
@@ -258,5 +266,4 @@ class PortfolioInit(object):
         # w_episodes has the shape (nb_epsides, horizon, window_size, columns)      4D
         # init_weights has the shape (nb_episodes, columns)                         2D
         # predictions has the shape (nb_episodes, horizon, num_predictors, columns) 3D
-        return np.array(w_episodes), np.array(init_weights), np.array(predictions)
-    
+        return np.array(w_episodes), np.array(init_weights), np.array(predictions)   

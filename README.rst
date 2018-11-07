@@ -37,7 +37,7 @@ or run the `config.py <pgtaa/config.py>`_ file using the flags listed below. By 
 `config.py <pgtaa/config.py>`_ file a new config file `mod_config.json` will be created. If you want to go back to
 the default setting just delete that config file.
 Changes to the data basis can also been made through the `config.json` file but it is not recommend.
-Otherwise you have to retrain the supportive prediction models.
+Otherwise you have to train the supportive prediction models again.
 
 .. image:: images/preview.gif
 
