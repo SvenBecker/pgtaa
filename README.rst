@@ -3,15 +3,24 @@ A Policy Gradient Approach for Tactical Asset Allocation
 =====
 
 
-.. image:: https://img.shields.io/pypi/v/pgtaa.svg
-        :target: https://pypi.python.org/pypi/pgtaa
-
 .. image:: https://img.shields.io/travis/SvenBecker/pgtaa.svg
         :target: https://travis-ci.org/SvenBecker/pgtaa
+        :alt: Travis build status
 
 .. image:: https://readthedocs.org/projects/pgtaa/badge/?version=latest
         :target: https://pgtaa.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
+        :alt: Documentation Status        
+
+.. image:: https://img.shields.io/hexpm/l/:package.svg   
+        :target: https://github.com/SvenBecker/pgtaa/blob/master/LICENSE.md
+        :alt: Licence
+        
+
+.. image:: https://img.shields.io/github/release/qubyte/rubidium.svg
+        :target: https://github.com/SvenBecker/pgtaa/releases
+        :alt: GitHub release
+
+
 
 
 Introduction
