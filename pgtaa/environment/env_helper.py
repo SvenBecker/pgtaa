@@ -259,3 +259,4 @@ class PortfolioInit(object):
         # init_weights has the shape (nb_episodes, columns)                         2D
         # predictions has the shape (nb_episodes, horizon, num_predictors, columns) 3D
         return np.array(w_episodes), np.array(init_weights), np.array(predictions)
+    
