@@ -55,7 +55,7 @@ still being supported some time onwards. At the time writing those supported web
 
 
 
-* Free software: MIT License
+* Free software: `MIT License <https://github.com/SvenBecker/pgtaa/blob/master/LICENSE>`_
 * Documentation: https://pgtaa.readthedocs.io.
 
 
