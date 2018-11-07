@@ -18,14 +18,15 @@ A Policy Gradient Approach for Tactical Asset Allocation
         :target: https://github.com/SvenBecker/pgtaa/releases
         :alt: GitHub release
 
-.. contents::
+This projects aims to provide a Reinforcement-Learning (RL) approach to the Tactical Asset Allocation (TAA) problem.
+Given a financial portfolio of multiple assets, the optimal and dynamic allocation of the assets is a common problem in active portfoilo management.
+TAA involves the identification of market inefficiencies to exploit market timing effects by short term reallocation of the asset weights. 
 
-.. toctree::
+.. contents:: Table of Contents
+        :depth: 2
 
 Introduction
 -------------
-
-.. image:: images/preview.gif
 
 Configurations
 --------------
@@ -38,6 +39,7 @@ the default setting just delete that config file.
 Changes to the data basis can also been made through the `config.json` file but it is not recommend.
 Otherwise you have to retrain the supportive prediction models.
 
+.. image:: images/preview.gif
 
 Data
 ----
@@ -62,6 +64,11 @@ Features
 --------
 
 * TODO
+
+Contributing
+------------
+
+Please take a look at `Contributing <CONTRIBUTING.rst>`_.
 
 Credits
 -------

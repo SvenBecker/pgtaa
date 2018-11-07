@@ -4,17 +4,23 @@ from pgtaa.core.optimize import WeightOptimize
 
 
 class Portfolio:
-    """
-    Provides some useful utility for basic portfolio calculations.
-    Keeps track of portfolio development (like variance, return, sharpe ratio etc.).
-    Has to be called for each new episode.
-    """
+
     def __init__(
             self,
             init_portfolio_value: float=100.0,
             risk_aversion: float=1.0,
             costs: float=0.025
     ):
+        """
+        Provides some useful utility for basic portfolio calculations.
+        Keeps track of portfolio development (like variance, return, sharpe ratio etc.).
+        Has to be called for each new episode.
+        
+        Keyword Arguments:
+            init_portfolio_value {float} -- initial portfolio value (default: {100.0})
+            risk_aversion {float} -- rate of risk aversion (default: {1.0})
+            costs {float} -- transaction costs as a percentage of total transaction volume (default: {0.025})
+        """
 
         self.init_portfolio_value = init_portfolio_value
         self.portfolio_value = init_portfolio_value
@@ -31,7 +37,17 @@ class Portfolio:
     def __str__(self):
         return str(self.__class__.__name__)
 
-    def update(self, actions):
+    def update(self, actions: np.ndarray):
+        """Updates the environment based on agent action and returns the next state observation 
+        to the agent.
+        
+        Arguments:
+            actions {np.ndarray} -- agent actions for each asset
+        
+        Returns:
+            [type] -- [description]
+        """
+
         # update portfolio weights based on given actions
         self.new_weights = actions
 
@@ -46,12 +62,15 @@ class Portfolio:
 
         return self.new_weights, self.cost, self.portfolio_value
 
-    def step(self, asset_returns, covariance):
-        """
-        Args:
-            :param asset_returns: (list) asset returns price_t / price_{t-1} - 1
-            :param covariance: (object) variance-covariance matrix based on current window
-        :return: reward, weights, portfolio value
+    def step(self, asset_returns: np.ndarray, covariance: np.ndarray):
+        """Make a step in time and return the resulting reward asset returns and asset weights.
+
+        Arguments:
+            asset_returns {np.ndarray} -- asset returns price_t / price_{t-1} - 1
+            covariance {np.ndarray} -- variance-covariance matrix based on current window
+        
+        Returns:
+            tuple -- reward, weights, portfolio value
         """
         # step forward and get new window
         self.covariance = covariance
@@ -84,12 +103,27 @@ class Portfolio:
         self.variance = self._get_variance()
         self.sharpe = self._sharpe_ratio()
 
-    def _get_weights(self, asset_returns):
-        # change of portfolio weights given possible deviations in asset returns.
-        # multiplication by broadcating
+    def _get_weights(self, asset_returns: np.ndarray):
+        """Natural change of portfolio weights given possible deviations in asset returns.
+        
+        Arguments:
+            asset_returns {np.ndarray} -- linear returns for each asset 
+        
+        Returns:
+            np.ndarray -- weights for the next timestep
+        """
         return asset_returns * self.new_weights / np.sum(asset_returns * self.new_weights)
 
-    def _get_cost(self, weight_diff):
+    def _get_cost(self, weight_diff: np.ndarray):
+        """Cost for trading based on total trading volume in relation to the portfolio value.
+        
+        Arguments:
+            weight_diff {np.ndarray} -- difference between old asset weights and reallocated weights
+        
+        Returns:
+            float -- transaction cost based on transaction volume and portfolio value
+        """
+
         # cost for trading based on trading volume
         cost = 0
         sum_weight_diff = sum(abs(weight_diff))     # sum over absolute weight difference
@@ -103,8 +137,13 @@ class Portfolio:
                self.cost / self.portfolio_value
 
     def _sharpe_ratio(self, risk_free=0.0):
-        # reward-to-Variability-Ratio (R_p - R_f) / sigma_R_p
-        # risk free rate on daily returns can be assumed to be zero
+        """Reward-to-Variability-Ratio (Sharpe Ratio).
+        Keyword Arguments:
+            risk_free {float} -- risk free rate, assumed to be zero because of very small investment horizons (default: {0.0})
+        
+        Returns:
+            float -- sharpe ration
+        """
         return (self.portfolio_value / self.init_portfolio_value - 1 - risk_free) \
                 / np.sqrt(self.variance)
 
@@ -126,12 +165,24 @@ class PortfolioInit(object):
                  predictors: list=None
                  ):
         """
-        :param data: evaluation dataframe
-        :param episodes: number of training/testing episodes
-        :param epochs: number of training epochs, if testing epochs=1
-        :param window: evaluation window (number of previous days + current day)
-        :param val_eps: number of validation episodes, if testing val_eps=None
+        Initializes the portfolio by calculating episode windows. Those windows contain
+        historical data windows for each timestep (evaluation window with a fixed size + 
+        current timestep), initial episode start asset weights as well as predictions for each timestep 
+        
+        Arguments:
+            data {np.ndarray} -- train or test set of historical data
+            nb_assets {int} -- number of assets in the portfolio
+            horizon {int} -- investment horizon
+            episodes {int} -- number of training/testing episodes
+            window_size {int} -- evaluation window (number of previous days + current day)
+        
+        Keyword Arguments:
+            epochs {int} -- number of training epochs, if testing epochs=1 (default: {1})
+            risk_aversion {float} -- rate of risk aversion (default: {1.0})
+            val_eps {int} -- number of validation episodes, if testing val_eps=None (default: {None})
+            predictors {list} -- list of market/asset price predictors (default: {None})
         """
+
         self.data = data
         self.assets = data[:, :8]
         self.episodes = episodes
@@ -153,7 +204,19 @@ class PortfolioInit(object):
         #self.val_window = self.episode_window[self.episodes:]
         #self.episode_window = self.episode_window[:self.episodes]
 
-    def _get_windows(self, window, weights, pred):
+    def _get_windows(self, window: np.ndarray, weights: np.ndarray, pred: np.ndarray):
+        """Given multiple training epochs, for each epoch the sequence of episodes will be randomly shuffeled
+        to (hopefully) improve agent training.
+        
+        Arguments:
+            window {np.ndarray} -- data window for each episode
+            weights {np.ndarray} -- inital weights for each episode
+            pred {np.ndarray} -- prediction for each episode and each timestep
+        
+        Returns:
+            tuple -- multiple arrays where epoch has been added as a new dimension
+        """
+
         epoch_permutations = [np.random.permutation(self.episodes) for _ in range(self.epochs)]
         windows = []
         init_weights = []
@@ -168,6 +231,14 @@ class PortfolioInit(object):
         return np.array(windows), np.array(init_weights), np.array(preds)
 
     def _build_windows(self):
+        """Creates episode windows containing historical data as well market predictions 
+        for each episode and each timestep. Furthermore ptimized initial weights for each 
+        episode will be calculated.
+        
+        Returns:
+            tuple -- multiple arrays
+        """
+
         # each window has horizon times subwindows
         w_episodes = []
         init_weights = []
