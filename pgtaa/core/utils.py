@@ -24,10 +24,15 @@ def get_scaler(train: np.ndarray, feature_range: tuple=(0, 1)):
     return scaler.fit(train)
 
 
-def read_data(file):
+def read_data(file, nb_assets: int=8, lin_return: bool=False, return_array: bool=True):
     data = pd.read_csv(file, parse_dates=True, index_col=0)
-    return data.values
-
+    if lin_return:
+        data.iloc[:, :8] = data.iloc[:, :8].pct_change(1)
+        data = data.iloc[1:]
+    if return_array:
+        return data.values
+    else:
+        return data
 
 def get_split(x: np.ndarray, y: np.ndarray, split: float=0.85):
     train_x, train_y = x[: int(x.shape[0] * split)], y[: int(x.shape[0] * split)]

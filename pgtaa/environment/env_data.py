@@ -1,16 +1,19 @@
+import os
 import sys
 import time
 import logging
-from tqdm import tqdm
 import pandas as pd
 import pandas_datareader as web
+from tqdm import tqdm
+from datetime import datetime
+
 from pgtaa.core.colorized import ColourHandler, color_bar
-from pgtaa.config import *
+import pgtaa.config as cfg
 
 
 logging.basicConfig(
     level=logging.DEBUG,
-    filename=os.path.join(DATA_DIR, "data.log"),
+    filename=os.path.join(cfg.DATA_DIR, "data.log"),
     filemode='w',
     format='%(asctime)s %(levelname)s: %(message)s',
     datefmt='%H:%M:%S')
@@ -24,7 +27,12 @@ ch.setLevel(logging.DEBUG)
 logger.addHandler(ch)
 
 # all supported data source websites
-data_sources = {"fred": FRED_DATA, "yahoo": YAHOO_DATA, "iex": IEX_DATA, 'moex': MOEX_DATA, "stooq": STOOQ_DATA}
+data_sources = {
+    "fred": cfg.FRED_DATA, 
+    "yahoo": cfg.YAHOO_DATA, 
+    "iex": cfg.IEX_DATA, 
+    "moex": cfg.MOEX_DATA, 
+    "stooq": cfg.STOOQ_DATA}
 
 class RequestData:
     def __init__(
@@ -35,14 +43,18 @@ class RequestData:
         names: list=None,
         source: str=None
     ):
+        """Downloads requested data from multiple data sources like Yahoo Finance or FRED.
+        
+        Arguments:
+            symbols {list} -- list with ticker symbols; ['IWD', 'GLD', ...]
+        
+        Keyword Arguments:
+            start {datetime} -- start date for historical data (default: {None})
+            end {datetime} -- end date for historical data (default: {None})
+            names {list} -- column names for data frame object (default: {None})
+            source {str} -- data source for requests (default: {None})
         """
-        Args:
-            :param symbols: contains ticker symbols; ['IWD', 'GLD', ...]
-            :param source: data source; 'yahoo', 'fred', 'google'
-            :param start: start date of historical data
-            :param end: end date of historical data
-            :param names: column names for data frame object
-        """
+ 
         self.symbols = self.names = list(symbols)
         self.source = source
         self.start = start
@@ -105,7 +117,7 @@ def _availability_check(data, source):
         return pd.DataFrame()
     else:
         return RequestData(list(data.keys()), source=source,
-                           start=START, end=END, names=data.values()).ds
+                           start=cfg.START, end=cfg.END, names=data.values()).ds
 
 
 def main(save: bool=True):
@@ -118,8 +130,8 @@ def main(save: bool=True):
     logger.debug(f'Data request runtime: {time.time() - __start}')
 
     feature_ds = pd.concat(ds, axis=1)
-    portfolio_ds = feature_ds[ASSET_NAMES]
-    feature_ds.drop(ASSET_NAMES, axis=1, inplace=True)
+    portfolio_ds = feature_ds[cfg.ASSET_NAMES]
+    feature_ds.drop(cfg.ASSET_NAMES, axis=1, inplace=True)
 
     # concatenate yahoo and fred data and interpolate missing data
     feature_ds.interpolate(method='linear', inplace=True)
@@ -128,14 +140,14 @@ def main(save: bool=True):
     environment = pd.DataFrame(pd.concat([portfolio_ds, feature_ds], axis=1)).dropna()
 
     # data split into a train and a test set
-    train = environment.iloc[:int(TRAIN_TEST_SPLIT * len(environment))]
-    test = environment.iloc[int(TRAIN_TEST_SPLIT * len(environment)):]
+    train = environment.iloc[:int(cfg.TRAIN_TEST_SPLIT * len(environment))]
+    test = environment.iloc[int(cfg.TRAIN_TEST_SPLIT * len(environment)):]
     if save:
-        environment.to_csv(ENV_CSV)
-        train.to_csv(TRAIN_CSV)
-        test.to_csv(TEST_CSV)
+        environment.to_csv(cfg.ENV_CSV)
+        train.to_csv(cfg.TRAIN_CSV)
+        test.to_csv(cfg.TEST_CSV)
         logger.debug(f'Files have been saved to:'
-                     f'\n{ENV_CSV}\n{TRAIN_CSV}\n{TEST_CSV}')
+                     f'\n{cfg.ENV_CSV}\n{cfg.TRAIN_CSV}\n{cfg.TEST_CSV}')
     logger.debug(f'Environment shape: {environment.shape}')
     logger.debug(f'Train set size {train.shape}')
     logger.debug(f'Test set size {test.shape}')
