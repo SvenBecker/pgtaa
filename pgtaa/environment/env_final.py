@@ -34,24 +34,19 @@ class Env:
             seed {int} -- number for random seed
         """
         self.data = data
+        self.observation = None
         np.random.seed(seed)
         
-    def observation(self):
+    def state(self):
         NotImplementedError
         
     def step(self, action: np.ndarray):
-        #reward, info = self._step(action)
         #return reward, info
-        return self._step(action)
+        state = reward = info = None
+        return _Step(state, reward, info)
     
     def reset(self):
-        return self._reset()
-    
-    def _step(self, action):
-        NotImplementedError
-    
-    def _reset(self):
-        NotImplementedError
+        return self.observation
         
     def __str__(self):
         return str(self.__class__.__name__)
@@ -118,8 +113,18 @@ class PortfolioEnv(Env):
         
         self.portfolio = Portfolio(portfolio_value, risk_aversion, costs)
         
-    def observation(self):
-        weights, var_covar, returns, mean, areturn = ()
+    def state(self):
+        #weights, var_covar, returns, mean, areturn = ()
+        pass
+
+    def reset(self):
+        pass
+
+    def epoch_reset(self):
+        self.dl.reset_epoch()
+
+    def episdoe_reset(self):
+        self.dl.reset_episode()
         
     @classmethod
     def from_config_spec(cls, train_mode: bool=True):
