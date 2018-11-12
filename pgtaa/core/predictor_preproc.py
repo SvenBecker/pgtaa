@@ -54,7 +54,7 @@ class TimeSeriesDataset(Dataset):
         return cls(xdata, ydata)
 
 
-def dl_from_spec(split: float=0.8, batch_size: int=32, shuffle: bool=True, 
+def dl_from_spec(split: float=0.8, batch_size: int=16, shuffle: bool=True, 
                 num_workers: int=2, pred_range: int=5):
     """Creates two PyTorch dataloaders from config spec
     
@@ -79,8 +79,8 @@ def dl_from_spec(split: float=0.8, batch_size: int=32, shuffle: bool=True,
     ds_valid = TimeSeriesDataset.from_spec(valid, pred_range=pred_range)
 
     dl_train = DataLoader(ds_train, batch_size=batch_size, 
-                        shuffle=shuffle, num_workers=num_workers)
+                        shuffle=shuffle, num_workers=num_workers, drop_last=True)
     dl_valid = DataLoader(ds_valid, batch_size=1, 
-                        shuffle=False, num_workers=1)
+                        shuffle=False, num_workers=1, drop_last=True)
 
     return dl_train, dl_valid
