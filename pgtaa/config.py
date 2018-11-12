@@ -13,36 +13,6 @@ except FileNotFoundError:
     with open(os.path.join(ROOT_DIR, 'config.json')) as f:
         config = json.load(f)
 
-
-def show_config():
-    from pprint import pprint
-    pprint(config)
-
-def overwrite_env_config(configuration: str, value):
-    """
-    You can overwrite some configurations either directly in the config.json file or through this function.
-    :param configuration: configuration setting which should be replaced
-    :param value: replacing value
-    """
-    with open(os.path.join(ROOT_DIR, 'config.json')) as f:
-        config = json.load(f)
-    config["environment"][configuration] = value
-    with open('mod_config.json', 'w') as fp:
-        json.dump(config, fp)
-        print("Changes have been made to the config file. "
-              "This changes will be saved in mod_config.json.")
-
-
-def remove_config():
-    # removes the modified config file
-    file = os.path.join(ROOT_DIR, "mod_config.json")
-    if os.path.exists(file):
-        os.remove(file)
-        print("File mod_config.json has been removed")
-    else:
-        print("The config file does not exist")
-
-
 # ------------------------ data --------------------------------- #
 
 # portfolio assets
@@ -115,6 +85,9 @@ TRAIN_TEST_SPLIT = config["environment"]["train_test_split"]
 # training and test set split size
 SEED = config["environment"]["seed"]
 
+# list of market predictors
+PREDICTOR = []
+
 # --------------------------- agent ----------------------------- #
 
 AGENT = config["agent"]["type"]
@@ -146,6 +119,45 @@ TEST_CSV = os.path.join(DATA_DIR, "test.csv")
 
 # --------------------------------------------------------------- #
 
+
+def show_config():
+    from pprint import pprint
+    pprint(config)
+
+
+def overwrite_env_config(configuration: str, value):
+    """
+    You can overwrite some configurations either directly in the config.json file or through this function.
+    :param configuration: configuration setting which should be replaced
+    :param value: replacing value
+    """
+    with open(os.path.join(ROOT_DIR, 'config.json')) as f:
+        config = json.load(f)
+    config["environment"][configuration] = value
+    with open('mod_config.json', 'w') as fp:
+        json.dump(config, fp)
+        print("Changes have been made to the config file. "
+              "This changes will be saved in mod_config.json.")
+
+
+def remove_config():
+    # removes the modified config file
+    file = os.path.join(ROOT_DIR, "mod_config.json")
+    if os.path.exists(file):
+        os.remove(file)
+        print("File mod_config.json has been removed")
+    else:
+        print("The config file does not exist")
+
+
+def get_scaler():
+    # returns a standard scaler fitted on the the training data
+    from pgtaa.core.utils import read_data
+    from sklearn.preprocessing import StandardScaler
+    return StandardScaler().fit(read_data(TRAIN_CSV, nb_assets=NB_ASSETS, lin_return=True))
+
+
+# --------------------------------------------------------------- #
 
 if __name__ == "__main__":
     from argparse import ArgumentParser

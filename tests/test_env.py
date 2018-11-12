@@ -1,7 +1,16 @@
 import numpy as np
-#from pgtaa.environment.env import PortfolioEnv
+import pandas as pd
+from pgtaa.environment.env import PortfolioEnv, PortfolioInit
 from pgtaa.core.utils import read_data
+from pgtaa.config import *
 
-print(read_data("../pgtaa/environment/data/environment.csv"))
 
-#env = PortfolioEnv(np.array([[1,2,3],[4,3,2],[2,3,4]]))
+def test_portfolio_init():
+    df = pd.read_csv(TRAIN_CSV, nrows=1000, parse_dates=True, index_col=0)
+    pinit= PortfolioInit()
+    assert pinit.windows.shape[:-1] != (EPOCHS, TRAIN_EPISODES, HORIZON, WINDOW_SIZE), "sizes for windows do not match"
+    return
+
+
+def tets_run_env():
+    pass

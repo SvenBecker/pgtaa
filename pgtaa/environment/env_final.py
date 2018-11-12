@@ -4,6 +4,7 @@ from collections import namedtuple
 from pgtaa.core.utils import read_data, flatten_state
 from pgtaa.core.optimize import WeightOptimize
 
+_State_Info = namedtuple('State', ['window', 'mean', 'var', 'cov', 'preds'])
 
 _Step = namedtuple('Step', ['state', 'reward', 'info'])
 
@@ -75,7 +76,10 @@ class PortfolioEnv(Env):
         portfolio_value: float = 1000.,
         risk_aversion: float = 1.,
         costs: float = 0.025,
-        seed: int = 42
+        seed: int = 42,
+        val_eps: int=100,
+        predictors: list=None,
+        scaler=None
     ):
         """
         Main environment for portfolio management. RL agents are being trained on this environment. 
@@ -93,8 +97,9 @@ class PortfolioEnv(Env):
             risk_aversion {float} -- rate of risk aversion (default: {1.0})
             costs {float} -- rate of composure to risk (default: {0.0025})
             seed {int} -- number for random seed setting (default: {42})
-            val_eps {int} -- number of validation episodes, if testing val_eps=None (default: {None})
+            val_eps {int} -- number of validation episodes, if testing val_eps=None (default: {100})
             predictors {list} -- list of market/asset price predictors (default: {None})
+            scaler {scaler object} -- import a scaler fro the predictors (default: {None})
         """
         super(PortfolioEnv, self).__init__(data, seed)
         self.nb_assets = nb_assets
@@ -106,7 +111,7 @@ class PortfolioEnv(Env):
         
         # initialization of helper classes like portfolio init class, portfolio tracker class
         # and a dataloader class
-        self.pinit = PortfolioInit(data, nb_assets, horizon, episodes, window_size, epochs, risk_aversion)
+        self.pinit = PortfolioInit(data, nb_assets, horizon, episodes, window_size, epochs, risk_aversion, val_eps, predictors, scaler)
 
         self.dl = DataLoader(self.pinit.windows, self.pinit.preds, self.pinit.init_weights)
         self.init_weight = self.dl.reset()
@@ -142,14 +147,17 @@ class PortfolioEnv(Env):
         if train_mode:
             data = read_data(cfg.TRAIN_CSV, nb_assets=cfg.NB_ASSETS, lin_return=True, return_array=True)
             episodes = cfg.TRAIN_EPISODES
+            val_eps = cfg.VALID_EPISODES
             epochs = cfg.EPOCHS
         else:
             data = read_data(cfg.TEST_CSV, nb_assets=cfg.NB_ASSETS, lin_return=True, return_array=True)
             episodes = cfg.TEST_EPISODES
+            val_eps = 0
             epochs = 1
         
         return cls(data, cfg.NB_ASSETS, episodes, epochs, cfg.HORIZON, cfg.WINDOW_SIZE, 
-                   cfg.PORTFOLIO_INIT_VALUE, cfg.RISK_AVERSION, cfg.COSTS, cfg.SEED)
+                   cfg.PORTFOLIO_INIT_VALUE, cfg.RISK_AVERSION, cfg.COSTS, cfg.SEED, 
+                   val_eps, cfg.PREDICTOR, get_scaler())
         
     @property
     def action_space(self):
@@ -186,7 +194,12 @@ class DataLoader:
     def get_state(self):
         window = self.windows[self.epoch, self.episode, self.timestep] 
         preds = self.predictions[self.epoch, self.episode, self.timestep]
-        return window, preds
+        assets = window[:8]
+        mean = np.mean(assets, axis=0)
+        var = np.var(assets, axis=0)
+        cov = np.cov(assets.T)
+        #np.corrcoef(assets.T)
+        return _State_Info(window, mean, var, cov, preds)
 
     def reset_episode(self):
         self.episode += 1
@@ -209,10 +222,11 @@ class PortfolioInit(object):
                  horizon: int,
                  episodes: int,
                  window_size: int,
-                 epochs: int = 1,
+                 epochs: int=1,
                  risk_aversion: float=1.0,
                  val_eps: int=None,
-                 predictors: list=None
+                 predictors: list=None,
+                 scaler=None
                  ):
         """
         Initializes the portfolio by calculating episode windows. Those windows contain
@@ -231,6 +245,7 @@ class PortfolioInit(object):
             risk_aversion {float} -- rate of risk aversion (default: {1.0})
             val_eps {int} -- number of validation episodes, if testing val_eps=None (default: {None})
             predictors {list} -- list of market/asset price predictors (default: {None})
+            scaler {scaler object} -- function to scale predictor input (default={None})
         """
 
         self.data = data
@@ -242,6 +257,7 @@ class PortfolioInit(object):
         self.nb_assets = nb_assets
         self.risk_aversion = risk_aversion
         self.predictors = predictors
+        self.scaler = scaler
 
         # random permutation of episode starting point
         episode_starts = np.random.permutation(range(self.window_size, len(data) - self.horizon))
@@ -305,7 +321,10 @@ class PortfolioInit(object):
                 w = self.data[episode - self.window_size + s : episode + s]
                 ws.append(w)
                 # TODO: Add model predictions
-                #preds.append([predictor.predict(w) for predictor in self.predictors])
+                try:
+                    w = self.scaler.transform(w)
+                except:
+                #preds.append([predictor.predict(w.reshape(1, w.shape[0], w.shape[1])) for predictor in self.predictors])
             
             w_episodes.append(ws)
             init_weights.append(weight)
