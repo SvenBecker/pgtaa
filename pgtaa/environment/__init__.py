@@ -1,2 +1,2 @@
-import sys
-sys.path.append('..')
+from .env_data import *
+#from .market_predictor import *

@@ -8,6 +8,8 @@ import pandas as pd
 from collections import OrderedDict
 
 from pgtaa.core.agents import BaHAgent
+from pgtaa.core.colorized import ColourHandler
+import pgtaa.config as cfg
 
 
 #TODO: add validation set (maybe k-fold cross val)
@@ -15,15 +17,15 @@ from pgtaa.core.agents import BaHAgent
 
 logging.basicConfig(
     level=logging.INFO,
-    filename="tmp/runner.log",
+    filename=os.path.join(os.path.join(cfg.MODEL_DIR, "tmp"), "runner.log"),
     filemode='w',
     format='%(asctime)s %(levelname)s: %(message)s',
     datefmt='%H:%M:%S')
 
 logger = logging.getLogger(__name__)
 
-# add stream handler which prints to stderr
-ch = logging.StreamHandler()
+# add stream handler
+ch = ColourHandler()
 
 # modify stream handler log format
 formatter_ch = logging.Formatter('%(levelname)s - %(message)s')
@@ -31,7 +33,7 @@ formatter_ch = logging.Formatter('%(levelname)s - %(message)s')
 ch.setFormatter(formatter_ch)
 
 # set stream handler log level
-ch.setLevel(logging.WARNING)
+ch.setLevel(logging.INFO)
 
 logger.addHandler(ch)
 
