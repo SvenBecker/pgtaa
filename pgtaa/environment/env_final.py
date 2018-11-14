@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from tqdm import trange
 from collections import namedtuple
 from pgtaa.core.utils import read_data, flatten_state
 from pgtaa.core.optimize import WeightOptimize
@@ -29,7 +30,7 @@ class Env:
     def __init__(self, data: np.ndarray, seed: int):
         """
         Base class for environment objects. Most of it's methods have to be overridden in the subclasses.
-        
+
         Arguments:
             init_portfolio_value {np.ndarray} -- historical data
             seed {int} -- number for random seed
@@ -37,36 +38,36 @@ class Env:
         self.data = data
         self.observation = None
         np.random.seed(seed)
-        
+
     def state(self):
         NotImplementedError
-        
+
     def step(self, action: np.ndarray):
         #return reward, info
         state = reward = info = None
         return _Step(state, reward, info)
-    
+
     def reset(self):
         return self.observation
-        
+
     def __str__(self):
         return str(self.__class__.__name__)
-    
+
     def __len__(self):
         return len(self.data)
-    
+
     @property
     def action_space(self):
         NotImplementedError
-    
+
     @property
     def state_space(self):
         NotImplementedError
-        
+
 
 class PortfolioEnv(Env):
     def __init__(
-        self, 
+        self,
         data: np.ndarray,
         nb_assets: int = 8,
         episodes: int = 100,
@@ -82,11 +83,11 @@ class PortfolioEnv(Env):
         scaler=None
     ):
         """
-        Main environment for portfolio management. RL agents are being trained on this environment. 
-        
+        Main environment for portfolio management. RL agents are being trained on this environment.
+
         Arguments:
             data {np.ndarray} -- train or test set of historical data
-        
+
         Keyword Arguments:
             nb_assets {int} -- number of assets in the portfolio (default: {8})
             horizon {int} -- investment horizon (default: {20})
@@ -108,16 +109,16 @@ class PortfolioEnv(Env):
         #self.portfolio_value = portfolio_value
         # self.risk_aversion = risk_aversion
         #self.costs = costs
-        
+
         # initialization of helper classes like portfolio init class, portfolio tracker class
         # and a dataloader class
         self.pinit = PortfolioInit(data, nb_assets, horizon, episodes, window_size, epochs, risk_aversion, val_eps, predictors, scaler)
 
         self.dl = DataLoader(self.pinit.windows, self.pinit.preds, self.pinit.init_weights)
         self.init_weight = self.dl.reset()
-        
+
         self.portfolio = Portfolio(portfolio_value, risk_aversion, costs)
-        
+
     def state(self):
         #weights, var_covar, returns, mean, areturn = ()
         pass
@@ -130,11 +131,11 @@ class PortfolioEnv(Env):
 
     def episdoe_reset(self):
         self.dl.reset_episode()
-        
+
     @classmethod
     def from_config_spec(cls, train_mode: bool=True):
         """
-        Reads the config.py specs and initializes the PortfolioEnv based on this file. 
+        Reads the config.py specs and initializes the PortfolioEnv based on this file.
 
         Keyword Arguments:
             train_mode {bool} -- evaluation or training mode (default: {True})
@@ -142,7 +143,7 @@ class PortfolioEnv(Env):
         Returns:
             PortfolioEnv -- initializes PortfolioEnv
         """
-        import pgtaa.config as cfg  
+        import pgtaa.config as cfg
 
         if train_mode:
             data = read_data(cfg.TRAIN_CSV, nb_assets=cfg.NB_ASSETS, lin_return=True, return_array=True)
@@ -154,31 +155,31 @@ class PortfolioEnv(Env):
             episodes = cfg.TEST_EPISODES
             val_eps = 0
             epochs = 1
-        
-        return cls(data, cfg.NB_ASSETS, episodes, epochs, cfg.HORIZON, cfg.WINDOW_SIZE, 
-                   cfg.PORTFOLIO_INIT_VALUE, cfg.RISK_AVERSION, cfg.COSTS, cfg.SEED, 
+
+        return cls(data, cfg.NB_ASSETS, episodes, epochs, cfg.HORIZON, cfg.WINDOW_SIZE,
+                   cfg.PORTFOLIO_INIT_VALUE, cfg.RISK_AVERSION, cfg.COSTS, cfg.SEED,
                    val_eps, cfg.PREDICTOR, get_scaler())
-        
+
     @property
     def action_space(self):
         # return action space shape
         return self.nb_assets,
-    
+
     @property
     def state_space(self):
         # return state space shape
         return int(0.5 * self.nb_assets * (self.nb_assets + 7)),
-    
-    
+
+
 class DataLoader:
-    def __init__(self, 
-                 windows: np.ndarray, 
+    def __init__(self,
+                 windows: np.ndarray,
                  predictions: np.ndarray,
                  weights: np.ndarray
                 ):
         """
-        DataLoader for the PortfolioEnv.  
-        
+        DataLoader for the PortfolioEnv.
+
         Arguments:
             windows {np.ndarray} -- train or test set of historical data
             predictions {np.ndarray} -- train or test set of historical data
@@ -190,9 +191,9 @@ class DataLoader:
         self.epoch = 0
         self.episode = 0
         self.timestep = 0
-        
+
     def get_state(self):
-        window = self.windows[self.epoch, self.episode, self.timestep] 
+        window = self.windows[self.epoch, self.episode, self.timestep]
         preds = self.predictions[self.epoch, self.episode, self.timestep]
         assets = window[:8]
         mean = np.mean(assets, axis=0)
@@ -214,7 +215,7 @@ class DataLoader:
         self.timestep = 0
         return self.weights[self.epoch, self.episode]
 
-        
+
 class PortfolioInit(object):
     def __init__(self,
                  data: np.ndarray,
@@ -230,16 +231,16 @@ class PortfolioInit(object):
                  ):
         """
         Initializes the portfolio by calculating episode windows. Those windows contain
-        historical data windows for each timestep (evaluation window with a fixed size + 
-        current timestep), initial episode start asset weights as well as predictions for each timestep 
-        
+        historical data windows for each timestep (evaluation window with a fixed size +
+        current timestep), initial episode start asset weights as well as predictions for each timestep
+
         Arguments:
             data {np.ndarray} -- train or test set of historical data
             nb_assets {int} -- number of assets in the portfolio
             horizon {int} -- investment horizon
             episodes {int} -- number of training/testing episodes
             window_size {int} -- evaluation window (number of previous days + current day)
-        
+
         Keyword Arguments:
             epochs {int} -- number of training epochs, if testing epochs=1 (default: {1})
             risk_aversion {float} -- rate of risk aversion (default: {1.0})
@@ -269,18 +270,18 @@ class PortfolioInit(object):
 
         #self.val_window = self.episode_window[self.episodes:]
         #self.episode_window = self.episode_window[:self.episodes]
-        
+
         print("Portfolio environment has been initialized.")
 
     def _get_windows(self, window: np.ndarray, weights: np.ndarray, pred: np.ndarray):
         """Given multiple training epochs, for each epoch the sequence of episodes will be randomly shuffeled
         to (hopefully) improve agent training.
-        
+
         Arguments:
             window {np.ndarray} -- data window for each episode
             weights {np.ndarray} -- inital weights for each episode
             pred {np.ndarray} -- prediction for each episode and each timestep
-        
+
         Returns:
             tuple -- multiple arrays where epoch has been added as a new dimension
         """
@@ -293,17 +294,17 @@ class PortfolioInit(object):
             windows.append(window[epoch_permutations[i]])
             init_weights.append(weights[epoch_permutations[i]])
             #preds.append(pred[epoch_permutations[i]])
-        
+
         # windows has the shape (epochs, nb_epsides, horizon, window_size, columns)     5D
         # init_weights has the shape (epochs, nb_episodes, columns)                     3D
         # preds has the shape (epochs, nb_episodes, horizon, predictors, columns)       4D
         return np.array(windows), np.array(init_weights), np.array(preds)
 
     def _build_windows(self):
-        """Creates episode windows containing historical data as well market predictions 
-        for each episode and each timestep. Furthermore ptimized initial weights for each 
+        """Creates episode windows containing historical data as well market predictions
+        for each episode and each timestep. Furthermore ptimized initial weights for each
         episode will be calculated.
-        
+
         Returns:
             tuple -- multiple arrays
         """
@@ -317,25 +318,26 @@ class PortfolioInit(object):
             preds = []
             assets = self.assets[episode - self.window_size: episode]
             weight = WeightOptimize(assets, np.cov(assets.T), self.risk_aversion).optimize_weights()
-            for s in range(self.horizon):
+            for s in trange(self.horizon):
                 w = self.data[episode - self.window_size + s : episode + s]
                 ws.append(w)
                 # TODO: Add model predictions
                 try:
                     w = self.scaler.transform(w)
                 except:
+                    pass
                 #preds.append([predictor.predict(w.reshape(1, w.shape[0], w.shape[1])) for predictor in self.predictors])
-            
+
             w_episodes.append(ws)
             init_weights.append(weight)
             # prediction.append(preds)
-        
+
         # w_episodes has the shape (nb_epsides, horizon, window_size, columns)      4D
         # init_weights has the shape (nb_episodes, columns)                         2D
         # predictions has the shape (nb_episodes, horizon, num_predictors, columns) 3D
-        return np.array(w_episodes), np.array(init_weights), np.array(predictions)   
-    
-    
+        return np.array(w_episodes), np.array(init_weights), np.array(predictions)
+
+
 class Portfolio:
 
     def __init__(
@@ -348,7 +350,7 @@ class Portfolio:
         Provides some useful utility for basic portfolio calculations.
         Keeps track of portfolio development (like variance, return, sharpe ratio etc.).
         Has to be called for each new episode.
-        
+
         Keyword Arguments:
             init_portfolio_value {float} -- initial portfolio value (default: {100.0})
             risk_aversion {float} -- rate of risk aversion (default: {1.0})
@@ -371,12 +373,12 @@ class Portfolio:
         return str(self.__class__.__name__)
 
     def update(self, actions: np.ndarray):
-        """Updates the environment based on agent action and returns the next state observation 
+        """Updates the environment based on agent action and returns the next state observation
         to the agent.
-        
+
         Arguments:
             actions {np.ndarray} -- agent actions for each asset
-        
+
         Returns:
             [type] -- [description]
         """
@@ -401,7 +403,7 @@ class Portfolio:
         Arguments:
             asset_returns {np.ndarray} -- asset returns price_t / price_{t-1} - 1
             covariance {np.ndarray} -- variance-covariance matrix based on current window
-        
+
         Returns:
             tuple -- reward, weights, portfolio value
         """
@@ -430,12 +432,12 @@ class Portfolio:
 
     def reset(self, weights: np.ndarray, covariance: np.ndarray):
         """Resets the portfolio value and the asset weights to their initial value.
-        
+
         Arguments:
             weights {np.ndarray} -- current asset weights
             covariance {np.ndarray} -- variance-covariance matrix
         """
-  
+
         self.portfolio_value = self.init_portfolio_value
         self.weights = weights
         self.covariance = covariance
@@ -444,10 +446,10 @@ class Portfolio:
 
     def _get_weights(self, asset_returns: np.ndarray):
         """Natural change of portfolio weights given possible deviations in asset returns.
-        
+
         Arguments:
-            asset_returns {np.ndarray} -- linear returns for each asset 
-        
+            asset_returns {np.ndarray} -- linear returns for each asset
+
         Returns:
             np.ndarray -- weights for the next timestep
         """
@@ -455,10 +457,10 @@ class Portfolio:
 
     def _get_cost(self, weight_diff: np.ndarray):
         """Cost for trading based on total trading volume in relation to the portfolio value.
-        
+
         Arguments:
             weight_diff {np.ndarray} -- difference between old asset weights and reallocated weights
-        
+
         Returns:
             float -- transaction cost based on transaction volume and portfolio value
         """
@@ -467,7 +469,7 @@ class Portfolio:
         cost = 0
 
         # sum over absolute weight difference
-        sum_weight_diff = sum(abs(weight_diff)) 
+        sum_weight_diff = sum(abs(weight_diff))
 
         if round(sum_weight_diff, 5) != 0:
             cost += sum_weight_diff * self.portfolio_value * self.costs
@@ -482,7 +484,7 @@ class Portfolio:
         """Reward-to-Variability-Ratio (Sharpe Ratio).
         Keyword Arguments:
             risk_free {float} -- risk free rate, assumed to be zero because of very small investment horizons (default: {0.0})
-        
+
         Returns:
             float -- sharpe ratio
         """

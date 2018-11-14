@@ -1,4 +1,4 @@
-import pandas as pd  
+import pandas as pd
 import numpy as np
 from tqdm import tqdm
 
@@ -31,7 +31,7 @@ class PredDense(nn.Module):
         self.relu = nn.ReLU(inplace=False)
         self.dropout = nn.Dropout(p=0.6, inplace=False)
         self.batch_size = batch_size
-    
+
     def forward(self, x):
         x = self.lin1(x)
         x = self.relu(x)
@@ -43,10 +43,10 @@ class PredDense(nn.Module):
         x = self.relu(x)
         x = self.lin(x)
         return x
-    
+
 net = PredDense().double().to(device)
 criterion = nn.MSELoss()
-optimizer = torch.optim.Adam(net.parameters(), lr=1e-3)   
+optimizer = torch.optim.Adam(net.parameters(), lr=1e-3)
 
 
 for epoch in range(max_epochs):
